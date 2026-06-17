@@ -239,29 +239,6 @@
         <div id="grouped-cards"></div>
       </div>
 
-      <!-- Payment history -->
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Payment history</div>
-            <div class="card-sub">All paid expenses · last 3 months</div>
-          </div>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Name</th><th>Category</th><th>Description</th><th>Paid on</th><th>Amount</th><th>Ref</th></tr>
-          </thead>
-          <tbody id="history-tbody"></tbody>
-          <tfoot>
-            <tr class="total-row">
-              <td colspan="4">Total paid</td>
-              <td id="history-total">$0.00</td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
     </div>
   </div>
 </div>
@@ -329,14 +306,6 @@ let expenses = [
   {id:5,name:'Marcus Lee',category:'Cleaning supplies',description:'Microfibre cloths bulk pack',property:'Multiple',date:'2026-06-08',amount:55.00,status:'paid',receipt:true,notes:'',adminNotes:'Paid via bank transfer'},
   {id:6,name:'Jake Kim',category:'Travel',description:'Ferry + petrol – Waiheke job',property:'Waiheke Property',date:'2026-06-05',amount:42.00,status:'paid',receipt:true,notes:'Ferry ticket attached',adminNotes:'Paid Jun 9'},
   {id:7,name:'Sara Kim',category:'Equipment',description:'Extension cord for outdoor areas',property:'Palm Beach Villa',date:'2026-05-28',amount:29.95,status:'paid',receipt:true,notes:'',adminNotes:'Paid May 31'},
-];
-
-const history = [
-  {name:'Marcus Lee',category:'Cleaning supplies',desc:'Microfibre cloths bulk pack',paid:'Jun 9, 2026',amount:55.00,ref:'EXP-005'},
-  {name:'Jake Kim',category:'Travel',desc:'Ferry + petrol – Waiheke job',paid:'Jun 9, 2026',amount:42.00,ref:'EXP-006'},
-  {name:'Sara Kim',category:'Equipment',desc:'Extension cord',paid:'May 31, 2026',amount:29.95,ref:'EXP-007'},
-  {name:'Tom Walsh',category:'Cleaning supplies',desc:'Citric acid cleaner',paid:'May 25, 2026',amount:18.50,ref:'EXP-008'},
-  {name:'Marcus Lee',category:'Travel',desc:'Fuel reimbursement May',paid:'May 20, 2026',amount:38.00,ref:'EXP-009'},
 ];
 
 let activeFilter = 'incoming';
@@ -522,21 +491,6 @@ function updateStats() {
   document.getElementById('stat-outstanding').textContent = '$' + outstanding.toFixed(2);
 }
 
-function renderHistory() {
-  const total = history.reduce((s, h) => s + h.amount, 0);
-  document.getElementById('history-tbody').innerHTML = history.map(h => `
-    <tr class="history-row">
-      <td>${h.name}</td>
-      <td><span class="pill gray">${h.category}</span></td>
-      <td>${h.desc}</td>
-      <td style="color:var(--text-muted);">${h.paid}</td>
-      <td class="amount-cell">$${h.amount.toFixed(2)}</td>
-      <td style="color:var(--text-muted);font-size:12px;">${h.ref}</td>
-    </tr>
-  `).join('');
-  document.getElementById('history-total').textContent = '$' + total.toFixed(2);
-}
-
 function openDetail(id) {
   activeExpenseId = id;
   const e = expenses.find(x => x.id === id);
@@ -622,7 +576,6 @@ function showToast(msg, color) {
 
 CB.init('expenses', CB.getSimulatedUser());
 renderExpenses();
-renderHistory();
 
 // Update form URL to be absolute
 const base = window.location.origin;
