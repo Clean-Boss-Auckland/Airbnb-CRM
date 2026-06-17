@@ -202,7 +202,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Expense claims</div>
-            <div class="card-sub">Click a row to review · Change status with the dropdown</div>
+            <div class="card-sub" id="list-card-sub">Click a row to review · Change status with the dropdown</div>
           </div>
           <div style="display:flex;gap:8px;">
             <select id="month-filter" style="width:140px;font-size:13px;padding:6px 10px;" onchange="renderExpenses()">
@@ -217,9 +217,24 @@
             </button>
           </div>
         </div>
+
+        <!-- Bulk action bar -->
+        <div id="bulk-bar" style="display:none;align-items:center;gap:12px;padding:12px 20px;background:var(--blue-light);border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;font-weight:600;color:#0c447c;" id="bulk-count">0 selected</span>
+          <div style="flex:1;"></div>
+          <span style="font-size:12px;color:var(--text-muted);">Move to:</span>
+          <button class="btn sm" onclick="bulkSetStatus('incoming')">Incoming</button>
+          <button class="btn sm" onclick="bulkSetStatus('processing')">Processing</button>
+          <button class="btn sm success" onclick="bulkSetStatus('paid')">Mark all as paid</button>
+          <button class="btn sm" onclick="clearSelection()">Cancel</button>
+        </div>
+
         <table>
           <thead>
             <tr>
+              <th style="width:32px;">
+                <input type="checkbox" id="select-all" onchange="toggleSelectAll(this)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--blue);"/>
+              </th>
               <th>Receipt</th>
               <th>Name</th>
               <th>Category</th>
@@ -346,6 +361,9 @@ function renderExpenses() {
   if (activeView === 'list') {
     document.getElementById('expenses-tbody').innerHTML = list.map(e => `
       <tr style="cursor:pointer;" onclick="openDetail(${e.id})">
+        <td onclick="event.stopPropagation()">
+          <input type="checkbox" class="row-check" data-id="${e.id}" onchange="updateBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--blue);"/>
+        </td>
         <td>
           <div class="receipt-thumb ${e.receipt ? 'has-file' : ''}">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -367,7 +385,8 @@ function renderExpenses() {
           <button class="btn sm" onclick="openDetail(${e.id})">Review</button>
         </td>
       </tr>
-    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No expenses found</td></tr>`;
+    `).join('') || `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">No expenses found</td></tr>`;
+    clearSelection();
   } else {
     renderGrouped(list);
   }
@@ -478,6 +497,55 @@ function quickStatus(id, val, el) {
     updateStats();
     showToast(`Status updated to ${val}`, val === 'paid' ? 'green' : 'blue');
   }
+}
+
+function toggleSelectAll(checkbox) {
+  document.querySelectorAll('.row-check').forEach(c => c.checked = checkbox.checked);
+  updateBulkBar();
+}
+
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll('.row-check:checked')).map(c => parseInt(c.dataset.id));
+}
+
+function updateBulkBar() {
+  const ids = getSelectedIds();
+  const bar = document.getElementById('bulk-bar');
+  const count = document.getElementById('bulk-count');
+  const selectAll = document.getElementById('select-all');
+  const total = document.querySelectorAll('.row-check').length;
+
+  if (ids.length > 0) {
+    bar.style.display = 'flex';
+    count.textContent = ids.length === 1 ? '1 selected' : `${ids.length} selected`;
+  } else {
+    bar.style.display = 'none';
+  }
+
+  if (selectAll) {
+    selectAll.checked = total > 0 && ids.length === total;
+    selectAll.indeterminate = ids.length > 0 && ids.length < total;
+  }
+}
+
+function clearSelection() {
+  document.querySelectorAll('.row-check').forEach(c => c.checked = false);
+  const selectAll = document.getElementById('select-all');
+  if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
+  const bar = document.getElementById('bulk-bar');
+  if (bar) bar.style.display = 'none';
+}
+
+function bulkSetStatus(status) {
+  const ids = getSelectedIds();
+  if (ids.length === 0) return;
+  ids.forEach(id => {
+    const e = expenses.find(x => x.id === id);
+    if (e) e.status = status;
+  });
+  const labelMap = { incoming: 'Incoming', processing: 'Processing', paid: 'Paid' };
+  showToast(`${ids.length} expense${ids.length === 1 ? '' : 's'} moved to ${labelMap[status]}`, status === 'paid' ? 'green' : 'blue');
+  renderExpenses();
 }
 
 function updateStats() {
