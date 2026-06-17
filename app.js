@@ -144,7 +144,7 @@ const CB = {
             <div class="user-name">${u.name}</div>
             <div class="user-role">${roleConfig.label}</div>
           </div>
-          <button class="btn-logout" title="Log out" onclick="window.location='../login.html'">
+          <button class="btn-logout" title="Log out" onclick="window.location='login.html'">
             ${this.icons.logout}
           </button>
         </div>
