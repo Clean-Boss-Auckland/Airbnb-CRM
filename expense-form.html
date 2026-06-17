@@ -77,16 +77,6 @@
     .success-ref strong{color:var(--navy);}
     .btn-another{padding:12px 28px;background:var(--blue);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
 
-    /* PROGRESS STEPS */
-    .steps{display:flex;align-items:center;gap:0;margin-bottom:28px;}
-    .step{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-muted);}
-    .step.active{color:var(--blue);}
-    .step.done{color:var(--green-text);}
-    .step-num{width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-    .step.active .step-num{background:var(--blue);color:#fff;}
-    .step.done .step-num{background:var(--green);color:#fff;}
-    .step-line{flex:1;height:1px;background:rgba(0,0,0,0.1);margin:0 8px;}
-
     @media(max-width:520px){.two-col{grid-template-columns:1fr;}}
   </style>
 </head>
@@ -106,44 +96,19 @@
       <p>Fill in the details below and attach a photo of your receipt. Your claim will be reviewed by the admin team and you'll be notified once it's processed.</p>
     </div>
 
-    <!-- Steps -->
-    <div class="steps">
-      <div class="step active" id="step1"><span class="step-num">1</span> Your details</div>
-      <div class="step-line"></div>
-      <div class="step" id="step2"><span class="step-num">2</span> Expense info</div>
-      <div class="step-line"></div>
-      <div class="step" id="step3"><span class="step-num">3</span> Receipt</div>
-    </div>
-
     <!-- Your details -->
     <div class="form-card">
       <div class="section-title">Your details</div>
       <div class="two-col">
         <div class="form-group">
-          <label class="form-label">Full name <span class="req">*</span></label>
-          <input type="text" id="f-name" placeholder="Marcus Lee"/>
-          <div class="error-msg" id="err-name">Please enter your name</div>
+          <label class="form-label">First name <span class="req">*</span></label>
+          <input type="text" id="f-firstname" placeholder="Marcus"/>
+          <div class="error-msg" id="err-firstname">Please enter your first name</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Email address <span class="req">*</span></label>
-          <input type="text" id="f-email" placeholder="marcus@email.com"/>
-          <div class="error-msg" id="err-email">Please enter your email</div>
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="form-group">
-          <label class="form-label">Phone number</label>
-          <input type="text" id="f-phone" placeholder="+64 21 000 0000"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Your role</label>
-          <select id="f-role">
-            <option value="">Select role...</option>
-            <option>Cleaner</option>
-            <option>Operations</option>
-            <option>Property Manager</option>
-            <option>Admin</option>
-          </select>
+          <label class="form-label">Last name <span class="req">*</span></label>
+          <input type="text" id="f-lastname" placeholder="Lee"/>
+          <div class="error-msg" id="err-lastname">Please enter your last name</div>
         </div>
       </div>
     </div>
@@ -180,12 +145,6 @@
           <option>Other</option>
         </select>
         <div class="error-msg" id="err-category">Please select a category</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Description <span class="req">*</span></label>
-        <input type="text" id="f-description" placeholder="e.g. Mop heads and detergent for Palm Beach Villa"/>
-        <div class="error-msg" id="err-description">Please describe the expense</div>
       </div>
 
       <div class="form-group">
@@ -287,22 +246,15 @@
     }
   }
 
-  function updateSteps(s) {
-    ['step1','step2','step3'].forEach((id, i) => {
-      const el = document.getElementById(id);
-      el.className = 'step' + (i+1 < s ? ' done' : i+1 === s ? ' active' : '');
-    });
-  }
 
   function validate() {
     let ok = true;
     const checks = [
-      ['f-name','err-name', v => v.trim().length > 1],
-      ['f-email','err-email', v => v.trim().length > 3],
+      ['f-firstname','err-firstname', v => v.trim().length > 1],
+      ['f-lastname','err-lastname', v => v.trim().length > 1],
       ['f-amount','err-amount', v => parseFloat(v) > 0],
       ['f-date','err-date', v => v.length > 0],
       ['f-category','err-category', v => v.length > 0],
-      ['f-description','err-description', v => v.trim().length > 3],
     ];
     checks.forEach(([field, err, test]) => {
       const el = document.getElementById(field);
@@ -332,9 +284,7 @@
   }
 
   function submitForm() {
-    updateSteps(2);
-    if (!validate()) { updateSteps(1); return; }
-    updateSteps(3);
+    if (!validate()) { return; }
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
     btn.textContent = 'Submitting...';
@@ -352,16 +302,14 @@
     document.getElementById('success-view').style.display = 'none';
     document.getElementById('submit-btn').disabled = false;
     document.getElementById('submit-btn').textContent = 'Submit expense claim →';
-    ['f-name','f-email','f-phone','f-amount','f-description','f-property','f-notes'].forEach(id => {
+    ['f-firstname','f-lastname','f-amount','f-property','f-notes'].forEach(id => {
       document.getElementById(id).value = '';
     });
-    document.getElementById('f-role').value = '';
     document.getElementById('f-category').value = '';
     document.getElementById('f-date').valueAsDate = new Date();
     document.getElementById('f-declare').checked = false;
     document.getElementById('upload-zone').classList.remove('has-file');
     document.getElementById('upload-preview').style.display = 'none';
-    updateSteps(1);
     window.scrollTo(0,0);
   }
 </script>
