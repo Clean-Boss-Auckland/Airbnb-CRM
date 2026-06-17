@@ -181,8 +181,7 @@
       <!-- View toggle + Filter tabs -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
         <div class="filter-tabs" id="status-filter-tabs">
-          <button class="filter-tab active" onclick="filterExpenses('all', this)">All</button>
-          <button class="filter-tab" onclick="filterExpenses('incoming', this)">Incoming</button>
+          <button class="filter-tab active" onclick="filterExpenses('incoming', this)">Incoming</button>
           <button class="filter-tab" onclick="filterExpenses('processing', this)">Processing</button>
           <button class="filter-tab" onclick="filterExpenses('paid', this)">Paid</button>
         </div>
@@ -340,7 +339,7 @@ const history = [
   {name:'Marcus Lee',category:'Travel',desc:'Fuel reimbursement May',paid:'May 20, 2026',amount:38.00,ref:'EXP-009'},
 ];
 
-let activeFilter = 'all';
+let activeFilter = 'incoming';
 let activeExpenseId = null;
 
 let activeView = 'list';
