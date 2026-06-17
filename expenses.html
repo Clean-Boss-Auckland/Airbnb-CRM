@@ -251,6 +251,15 @@
 
       <!-- GROUPED VIEW (by user) -->
       <div id="grouped-view-card" style="display:none;margin-bottom:20px;">
+        <div id="grouped-bulk-bar" style="display:none;align-items:center;gap:12px;padding:12px 20px;background:var(--blue-light);border-radius:10px;margin-bottom:12px;">
+          <span style="font-size:13px;font-weight:600;color:#0c447c;" id="grouped-bulk-count">0 selected</span>
+          <div style="flex:1;"></div>
+          <span style="font-size:12px;color:var(--text-muted);">Move to:</span>
+          <button class="btn sm" onclick="bulkSetStatusGrouped('incoming')">Incoming</button>
+          <button class="btn sm" onclick="bulkSetStatusGrouped('processing')">Processing</button>
+          <button class="btn sm success" onclick="bulkSetStatusGrouped('paid')">Mark all as paid</button>
+          <button class="btn sm" onclick="clearSelectionGrouped()">Cancel</button>
+        </div>
         <div id="grouped-cards"></div>
       </div>
 
@@ -389,6 +398,8 @@ function renderExpenses() {
     clearSelection();
   } else {
     renderGrouped(list);
+    const groupedBar = document.getElementById('grouped-bulk-bar');
+    if (groupedBar) groupedBar.style.display = 'none';
   }
 
   updateStats();
@@ -409,7 +420,7 @@ function renderGrouped(list) {
     return;
   }
 
-  container.innerHTML = names.map(name => {
+  container.innerHTML = names.map((name, gi) => {
     const items = groups[name];
     const total = items.reduce((s, e) => s + e.amount, 0);
     const outstanding = items.filter(e => e.status !== 'paid').reduce((s, e) => s + e.amount, 0);
@@ -418,15 +429,18 @@ function renderGrouped(list) {
 
     return `
       <div class="card" style="margin-bottom:14px;">
-        <div class="card-header" style="cursor:pointer;" onclick="toggleGroup(this)">
+        <div class="card-header">
           <div style="display:flex;align-items:center;gap:12px;">
-            <div class="avatar" style="background:var(--blue);">${initials}</div>
-            <div>
-              <div class="card-title">${name}</div>
-              <div class="card-sub">${items.length} expense${items.length === 1 ? '' : 's'}</div>
+            <input type="checkbox" class="group-select-all" data-group="${gi}" onchange="toggleGroupSelectAll(${gi}, this)" onclick="event.stopPropagation()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--blue);"/>
+            <div style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="toggleGroup(this)">
+              <div class="avatar" style="background:var(--blue);">${initials}</div>
+              <div>
+                <div class="card-title">${name}</div>
+                <div class="card-sub">${items.length} expense${items.length === 1 ? '' : 's'}</div>
+              </div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:24px;">
+          <div style="display:flex;align-items:center;gap:24px;cursor:pointer;" onclick="toggleGroup(this)">
             <div style="text-align:right;">
               <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Outstanding</div>
               <div style="font-size:16px;font-weight:800;color:${outstanding > 0 ? 'var(--red)' : 'var(--text-muted)'};">$${outstanding.toFixed(2)}</div>
@@ -441,11 +455,14 @@ function renderGrouped(list) {
         <div class="group-body" style="display:none;">
           <table>
             <thead>
-              <tr><th>Receipt</th><th>Category</th><th>Property / Job</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
+              <tr><th style="width:32px;"></th><th>Receipt</th><th>Category</th><th>Property / Job</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody>
               ${items.map(e => `
                 <tr style="cursor:pointer;" onclick="openDetail(${e.id})">
+                  <td onclick="event.stopPropagation()">
+                    <input type="checkbox" class="group-row-check" data-group="${gi}" data-id="${e.id}" onchange="updateGroupedBulkBar()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--blue);"/>
+                  </td>
                   <td>
                     <div class="receipt-thumb ${e.receipt ? 'has-file' : ''}">
                       <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -468,7 +485,7 @@ function renderGrouped(list) {
             </tbody>
             <tfoot>
               <tr class="total-row">
-                <td colspan="4">Subtotal · ${name}</td>
+                <td colspan="5">Subtotal · ${name}</td>
                 <td>$${total.toFixed(2)}</td>
                 <td colspan="2" style="color:var(--text-muted);font-weight:400;font-size:12px;">Paid: $${paidTotal.toFixed(2)}</td>
               </tr>
@@ -538,6 +555,56 @@ function clearSelection() {
 
 function bulkSetStatus(status) {
   const ids = getSelectedIds();
+  if (ids.length === 0) return;
+  ids.forEach(id => {
+    const e = expenses.find(x => x.id === id);
+    if (e) e.status = status;
+  });
+  const labelMap = { incoming: 'Incoming', processing: 'Processing', paid: 'Paid' };
+  showToast(`${ids.length} expense${ids.length === 1 ? '' : 's'} moved to ${labelMap[status]}`, status === 'paid' ? 'green' : 'blue');
+  renderExpenses();
+}
+
+function toggleGroupSelectAll(groupIdx, checkbox) {
+  document.querySelectorAll(`.group-row-check[data-group="${groupIdx}"]`).forEach(c => c.checked = checkbox.checked);
+  updateGroupedBulkBar();
+}
+
+function getSelectedIdsGrouped() {
+  return Array.from(document.querySelectorAll('.group-row-check:checked')).map(c => parseInt(c.dataset.id));
+}
+
+function updateGroupedBulkBar() {
+  const ids = getSelectedIdsGrouped();
+  const bar = document.getElementById('grouped-bulk-bar');
+  const count = document.getElementById('grouped-bulk-count');
+
+  if (ids.length > 0) {
+    bar.style.display = 'flex';
+    count.textContent = ids.length === 1 ? '1 selected' : `${ids.length} selected`;
+  } else {
+    bar.style.display = 'none';
+  }
+
+  // Update each group's select-all checkbox state (checked/indeterminate)
+  document.querySelectorAll('.group-select-all').forEach(groupCheckbox => {
+    const gi = groupCheckbox.dataset.group;
+    const rowChecks = document.querySelectorAll(`.group-row-check[data-group="${gi}"]`);
+    const checkedRows = document.querySelectorAll(`.group-row-check[data-group="${gi}"]:checked`);
+    groupCheckbox.checked = rowChecks.length > 0 && checkedRows.length === rowChecks.length;
+    groupCheckbox.indeterminate = checkedRows.length > 0 && checkedRows.length < rowChecks.length;
+  });
+}
+
+function clearSelectionGrouped() {
+  document.querySelectorAll('.group-row-check').forEach(c => c.checked = false);
+  document.querySelectorAll('.group-select-all').forEach(c => { c.checked = false; c.indeterminate = false; });
+  const bar = document.getElementById('grouped-bulk-bar');
+  if (bar) bar.style.display = 'none';
+}
+
+function bulkSetStatusGrouped(status) {
+  const ids = getSelectedIdsGrouped();
   if (ids.length === 0) return;
   ids.forEach(id => {
     const e = expenses.find(x => x.id === id);
