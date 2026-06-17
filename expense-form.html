@@ -10,71 +10,78 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--navy:#0d1b2e;--blue:#3b9de0;--blue-light:#e8f4fd;--white:#fff;--bg:#f4f5f7;--text:#1a2535;--text-muted:#6b7c93;--border:rgba(0,0,0,0.12);--green:#22c55e;--green-bg:#dcfce7;--green-text:#166534;--red:#ef4444;--radius:12px}
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-
-    /* NAV */
     nav{background:#fff;border-bottom:1px solid rgba(0,0,0,0.08);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;}
     .nav-logo{font-size:18px;font-weight:900;letter-spacing:-.5px;color:var(--navy);text-decoration:none;}
     .nav-logo span{color:var(--blue)}
     .nav-badge{background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
-
-    /* LAYOUT */
     .page{max-width:680px;margin:0 auto;padding:40px 20px;flex:1;width:100%;}
-
-    .form-header{margin-bottom:32px;}
+    .form-header{margin-bottom:28px;}
     .form-header h1{font-size:24px;font-weight:800;color:var(--navy);letter-spacing:-.5px;margin-bottom:6px;}
     .form-header p{font-size:14px;color:var(--text-muted);line-height:1.6;}
-
-    /* CARD */
     .form-card{background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:28px;margin-bottom:16px;}
     .section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,0.06);}
-
     .form-group{margin-bottom:18px;}
+    .form-group:last-child{margin-bottom:0;}
     .form-label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;}
     .form-label .req{color:var(--red);margin-left:2px;}
     .form-hint{font-size:11px;color:var(--text-muted);margin-top:4px;}
-
-    input[type=text],input[type=email],input[type=number],input[type=date],select,textarea{
-      width:100%;padding:11px 14px;border:1.5px solid rgba(0,0,0,0.12);border-radius:10px;
-      font-size:14px;font-family:inherit;color:var(--text);background:#fff;outline:none;transition:border-color .2s;
-    }
+    input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:11px 14px;border:1.5px solid rgba(0,0,0,0.12);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);background:#fff;outline:none;transition:border-color .2s;}
     input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,157,224,0.1);}
-    input.error,select.error,textarea.error{border-color:var(--red);}
+    input.error,select.error{border-color:var(--red);}
     .error-msg{font-size:12px;color:var(--red);margin-top:4px;display:none;}
     .error-msg.show{display:block;}
-
     .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-
-    /* UPLOAD ZONE */
-    .upload-zone{border:2px dashed rgba(0,0,0,0.15);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;position:relative;}
-    .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-light);}
-    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-    .upload-icon{width:40px;height:40px;margin:0 auto 12px;display:block;stroke:var(--text-muted);fill:none;stroke-width:1.5;}
-    .upload-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
-    .upload-sub{font-size:12px;color:var(--text-muted);}
-    .upload-preview{margin-top:14px;display:none;}
-    .upload-preview img{max-width:100%;max-height:220px;border-radius:8px;object-fit:contain;border:1px solid rgba(0,0,0,0.08);}
-    .upload-preview .file-name{font-size:12px;color:var(--green-text);font-weight:600;margin-top:6px;background:var(--green-bg);padding:4px 10px;border-radius:6px;display:inline-block;}
-    .upload-zone.has-file{border-color:#86efac;background:#f0fdf4;}
-    .upload-zone.has-file .upload-icon{stroke:#22c55e;}
-
-    /* AMOUNT */
     .amount-wrap{position:relative;}
     .amount-wrap::before{content:'$';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--text-muted);pointer-events:none;}
     .amount-wrap input{padding-left:28px;}
 
-    /* SUBMIT BTN */
-    .submit-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .2s,transform .15s;margin-top:8px;}
+    /* EXPENSE ITEM CARD */
+    .expense-item{background:#fff;border:1.5px solid rgba(0,0,0,0.08);border-radius:14px;padding:24px;margin-bottom:12px;position:relative;}
+    .expense-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .expense-item-num{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--blue);background:var(--blue-light);padding:4px 10px;border-radius:20px;}
+    .remove-item-btn{background:none;border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;color:var(--text-muted);font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:4px;}
+    .remove-item-btn:hover{background:var(--red);color:#fff;border-color:var(--red);}
+    .remove-item-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+
+    /* RUNNING TOTAL */
+    .total-bar{background:var(--navy);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .total-bar-label{font-size:13px;font-weight:600;color:rgba(255,255,255,0.7);}
+    .total-bar-amount{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+    .total-bar-count{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+    /* ADD ANOTHER BUTTON */
+    .add-item-btn{width:100%;padding:14px;background:#fff;border:2px dashed rgba(59,157,224,0.4);border-radius:12px;color:var(--blue);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;}
+    .add-item-btn:hover{background:var(--blue-light);border-color:var(--blue);}
+    .add-item-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;}
+
+    /* UPLOAD */
+    .upload-zone{border:2px dashed rgba(0,0,0,0.15);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;position:relative;}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-light);}
+    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .upload-zone svg{width:28px;height:28px;stroke:var(--text-muted);fill:none;stroke-width:1.5;margin:0 auto 8px;display:block;}
+    .upload-zone .upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+    .upload-zone .upload-sub{font-size:11px;color:var(--text-muted);}
+    .upload-zone.has-file{border-color:#86efac;background:#f0fdf4;}
+    .upload-zone.has-file svg{stroke:#22c55e;}
+    .file-name{font-size:11px;color:var(--green-text);font-weight:600;margin-top:6px;background:var(--green-bg);padding:3px 8px;border-radius:6px;display:inline-block;}
+    .preview-img{max-width:100%;max-height:160px;border-radius:6px;object-fit:contain;border:1px solid rgba(0,0,0,0.08);margin-top:8px;display:none;}
+
+    /* SUBMIT */
+    .submit-btn{width:100%;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .2s,transform .15s;margin-top:4px;}
     .submit-btn:hover{background:#1a2f48;transform:translateY(-1px);}
     .submit-btn:disabled{background:#9ca3af;cursor:not-allowed;transform:none;}
 
-    /* SUCCESS STATE */
+    /* SUCCESS */
     .success-screen{display:none;text-align:center;padding:60px 20px;max-width:480px;margin:0 auto;}
     .success-icon{width:64px;height:64px;background:var(--green-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
     .success-icon svg{width:28px;height:28px;stroke:var(--green-text);fill:none;stroke-width:2.5;}
     .success-screen h2{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:10px;}
-    .success-screen p{font-size:15px;color:var(--text-muted);line-height:1.7;margin-bottom:24px;}
+    .success-screen p{font-size:15px;color:var(--text-muted);line-height:1.7;margin-bottom:20px;}
     .success-ref{background:var(--bg);border-radius:10px;padding:12px 20px;font-size:13px;color:var(--text-muted);margin-bottom:24px;}
     .success-ref strong{color:var(--navy);}
+    .success-items{background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left;}
+    .success-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:13px;}
+    .success-item-row:last-child{border-bottom:none;font-weight:700;}
     .btn-another{padding:12px 28px;background:var(--blue);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
 
     @media(max-width:520px){.two-col{grid-template-columns:1fr;}}
@@ -89,14 +96,13 @@
 
 <div class="page">
 
-  <!-- Form -->
   <div id="form-view">
     <div class="form-header">
-      <h1>Submit an expense</h1>
-      <p>Fill in the details below and attach a photo of your receipt. Your claim will be reviewed by the admin team and you'll be notified once it's processed.</p>
+      <h1>Submit expenses</h1>
+      <p>Add one or more expenses below. Attach a receipt for each one, then submit them all in one go.</p>
     </div>
 
-    <!-- Your details -->
+    <!-- Your details — once at the top -->
     <div class="form-card">
       <div class="section-title">Your details</div>
       <div class="two-col">
@@ -113,82 +119,30 @@
       </div>
     </div>
 
-    <!-- Expense info -->
-    <div class="form-card">
-      <div class="section-title">Expense details</div>
-      <div class="two-col">
-        <div class="form-group">
-          <label class="form-label">Amount <span class="req">*</span></label>
-          <div class="amount-wrap">
-            <input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0"/>
-          </div>
-          <div class="error-msg" id="err-amount">Please enter the amount</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Date of expense <span class="req">*</span></label>
-          <input type="date" id="f-date"/>
-          <div class="error-msg" id="err-date">Please select a date</div>
-        </div>
-      </div>
+    <!-- Expense items — repeatable -->
+    <div id="expense-items"></div>
 
-      <div class="form-group">
-        <label class="form-label">Category <span class="req">*</span></label>
-        <select id="f-category">
-          <option value="">Select category...</option>
-          <option>Cleaning supplies</option>
-          <option>Equipment</option>
-          <option>Travel / Fuel</option>
-          <option>Meals</option>
-          <option>Uniform / PPE</option>
-          <option>Tools</option>
-          <option>Parking / Tolls</option>
-          <option>Other</option>
-        </select>
-        <div class="error-msg" id="err-category">Please select a category</div>
+    <!-- Running total -->
+    <div class="total-bar" id="total-bar">
+      <div>
+        <div class="total-bar-label">Total claim amount</div>
+        <div class="total-bar-count" id="total-count">1 expense</div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Property / Job reference</label>
-        <input type="text" id="f-property" placeholder="e.g. Palm Beach Villa, or Job #123"/>
-        <div class="form-hint">Leave blank if not property-specific</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Additional notes</label>
-        <textarea id="f-notes" rows="3" placeholder="Any extra context, reason for purchase, or details the admin team should know..."></textarea>
-      </div>
+      <div class="total-bar-amount" id="total-amount">$0.00</div>
     </div>
 
-    <!-- Receipt upload -->
-    <div class="form-card">
-      <div class="section-title">Receipt</div>
-      <div class="form-group">
-        <label class="form-label">Upload receipt photo <span class="req">*</span></label>
-        <div class="upload-zone" id="upload-zone" ondragover="handleDrag(event)" ondrop="handleDrop(event)">
-          <input type="file" id="f-receipt" accept="image/*,.pdf" onchange="handleFile(this)"/>
-          <svg class="upload-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <div class="upload-title">Tap to upload or drag & drop</div>
-          <div class="upload-sub">JPG, PNG or PDF · Max 10MB</div>
-          <div class="upload-preview" id="upload-preview">
-            <img id="preview-img" src="" alt="Receipt preview"/>
-            <div class="file-name" id="file-name"></div>
-          </div>
-        </div>
-        <div class="error-msg" id="err-receipt">Please upload a receipt</div>
-        <div class="form-hint">A clear photo of your receipt is required for reimbursement</div>
-      </div>
-
-      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px 14px;font-size:12px;color:#92400e;">
-        <strong>Important:</strong> Expenses without a receipt may be declined. If you don't have one yet, submit now and attach it later by contacting your manager.
-      </div>
-    </div>
+    <!-- Add another -->
+    <button class="add-item-btn" onclick="addExpenseItem()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add another expense
+    </button>
 
     <!-- Declaration -->
     <div class="form-card">
       <div class="section-title">Declaration</div>
       <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:13px;color:var(--text-muted);line-height:1.6;">
         <input type="checkbox" id="f-declare" style="width:16px;height:16px;margin-top:2px;accent-color:var(--blue);flex-shrink:0;"/>
-        I confirm that this expense was incurred in the course of my work for Clean Boss and that the details I've provided are accurate and correct.
+        I confirm that all expenses listed were incurred in the course of my work for Clean Boss and that the details I've provided are accurate and correct.
       </label>
       <div class="error-msg" id="err-declare">You must agree to the declaration</div>
     </div>
@@ -201,96 +155,237 @@
     <div class="success-icon">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <h2>Expense submitted!</h2>
-    <p>Your claim has been received and is now with the admin team for review. You'll be notified once it's been processed.</p>
-    <div class="success-ref">
-      Reference number: <strong id="success-ref">EXP-000</strong>
-    </div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Expected processing time: 2–3 business days</p>
-    <button class="btn-another" onclick="resetForm()">Submit another expense</button>
+    <h2>Expenses submitted!</h2>
+    <p>Your claim has been received and is with the admin team for review. You'll be notified once it's processed.</p>
+    <div class="success-ref">Reference: <strong id="success-ref">EXP-000</strong></div>
+    <div class="success-items" id="success-items"></div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Expected processing time: 2–3 business days</p>
+    <button class="btn-another" onclick="resetForm()">Submit another claim</button>
   </div>
 
 </div>
 
 <script>
-  // Set today's date as default
-  document.getElementById('f-date').valueAsDate = new Date();
+  let itemCount = 0;
 
-  function handleFile(input) {
+  function addExpenseItem() {
+    itemCount++;
+    const id = itemCount;
+    const container = document.getElementById('expense-items');
+    const div = document.createElement('div');
+    div.className = 'expense-item';
+    div.id = `item-${id}`;
+    div.innerHTML = `
+      <div class="expense-item-header">
+        <span class="expense-item-num" id="item-label-${id}">Expense ${id}</span>
+        ${id > 1 ? `<button class="remove-item-btn" onclick="removeItem(${id})"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove</button>` : ''}
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Amount <span class="req">*</span></label>
+          <div class="amount-wrap">
+            <input type="number" id="amount-${id}" placeholder="0.00" step="0.01" min="0" oninput="updateTotal()"/>
+          </div>
+          <div class="error-msg" id="err-amount-${id}">Please enter the amount</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date <span class="req">*</span></label>
+          <input type="date" id="date-${id}"/>
+          <div class="error-msg" id="err-date-${id}">Please select a date</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category <span class="req">*</span></label>
+        <select id="category-${id}">
+          <option value="">Select category...</option>
+          <option>Cleaning supplies</option>
+          <option>Equipment</option>
+          <option>Travel / Fuel</option>
+          <option>Meals</option>
+          <option>Uniform / PPE</option>
+          <option>Tools</option>
+          <option>Parking / Tolls</option>
+          <option>Other</option>
+        </select>
+        <div class="error-msg" id="err-category-${id}">Please select a category</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Property / Job reference</label>
+        <input type="text" id="property-${id}" placeholder="e.g. Palm Beach Villa, or Job #123"/>
+        <div class="form-hint">Leave blank if not property-specific</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea id="notes-${id}" rows="2" placeholder="Any extra context the admin team should know..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Receipt <span class="req">*</span></label>
+        <div class="upload-zone" id="zone-${id}" ondragover="handleDrag(event,${id})" ondrop="handleDrop(event,${id})">
+          <input type="file" id="receipt-${id}" accept="image/*,.pdf" onchange="handleFile(this,${id})"/>
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="upload-title">Tap to upload or drag & drop</div>
+          <div class="upload-sub">JPG, PNG or PDF · Max 10MB</div>
+          <img id="preview-${id}" class="preview-img" src="" alt=""/>
+          <div class="file-name" id="fname-${id}" style="display:none;"></div>
+        </div>
+        <div class="error-msg" id="err-receipt-${id}">Please upload a receipt</div>
+      </div>
+    `;
+    container.appendChild(div);
+
+    // Set today's date
+    const dateInput = document.getElementById(`date-${id}`);
+    if (dateInput) dateInput.valueAsDate = new Date();
+
+    updateTotal();
+    updateLabels();
+
+    // Scroll to new item
+    setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+
+  function removeItem(id) {
+    const el = document.getElementById(`item-${id}`);
+    if (el) el.remove();
+    updateTotal();
+    updateLabels();
+  }
+
+  function updateLabels() {
+    const items = document.querySelectorAll('.expense-item');
+    items.forEach((item, i) => {
+      const label = item.querySelector('[id^="item-label-"]');
+      if (label) label.textContent = `Expense ${i + 1}`;
+    });
+  }
+
+  function updateTotal() {
+    let total = 0;
+    let count = 0;
+    document.querySelectorAll('[id^="amount-"]').forEach(inp => {
+      const v = parseFloat(inp.value);
+      if (!isNaN(v) && v > 0) { total += v; count++; }
+    });
+    document.getElementById('total-amount').textContent = '$' + total.toFixed(2);
+    const itemCount = document.querySelectorAll('.expense-item').length;
+    document.getElementById('total-count').textContent = itemCount === 1 ? '1 expense' : `${itemCount} expenses`;
+  }
+
+  function handleFile(input, id) {
     const file = input.files[0];
     if (!file) return;
-    const zone = document.getElementById('upload-zone');
-    const preview = document.getElementById('upload-preview');
-    const img = document.getElementById('preview-img');
-    const name = document.getElementById('file-name');
+    const zone = document.getElementById(`zone-${id}`);
+    const fname = document.getElementById(`fname-${id}`);
+    const img = document.getElementById(`preview-${id}`);
     zone.classList.add('has-file');
-    name.textContent = '✓ ' + file.name;
-    preview.style.display = 'block';
+    fname.textContent = '✓ ' + file.name;
+    fname.style.display = 'inline-block';
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
       reader.readAsDataURL(file);
-    } else {
-      img.style.display = 'none';
     }
   }
 
-  function handleDrag(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag'); }
-  function handleDrop(e) {
+  function handleDrag(e, id) { e.preventDefault(); document.getElementById(`zone-${id}`).classList.add('drag'); }
+  function handleDrop(e, id) {
     e.preventDefault();
-    document.getElementById('upload-zone').classList.remove('drag');
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      document.getElementById('f-receipt').files = e.dataTransfer.files;
-      handleFile(document.getElementById('f-receipt'));
+    document.getElementById(`zone-${id}`).classList.remove('drag');
+    const inp = document.getElementById(`receipt-${id}`);
+    if (e.dataTransfer.files[0]) {
+      // Can't set files directly, trigger handleFile with dataTransfer
+      const file = e.dataTransfer.files[0];
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      inp.files = dt.files;
+      handleFile(inp, id);
     }
   }
-
 
   function validate() {
     let ok = true;
-    const checks = [
-      ['f-firstname','err-firstname', v => v.trim().length > 1],
-      ['f-lastname','err-lastname', v => v.trim().length > 1],
-      ['f-amount','err-amount', v => parseFloat(v) > 0],
-      ['f-date','err-date', v => v.length > 0],
-      ['f-category','err-category', v => v.length > 0],
-    ];
-    checks.forEach(([field, err, test]) => {
-      const el = document.getElementById(field);
-      const errEl = document.getElementById(err);
-      const valid = test(el.value);
+
+    // Name fields
+    [['f-firstname','err-firstname'], ['f-lastname','err-lastname']].forEach(([fid, eid]) => {
+      const el = document.getElementById(fid);
+      const valid = el.value.trim().length > 1;
       el.classList.toggle('error', !valid);
-      errEl.classList.toggle('show', !valid);
+      document.getElementById(eid).classList.toggle('show', !valid);
       if (!valid) ok = false;
     });
-    const receipt = document.getElementById('f-receipt');
-    const errReceipt = document.getElementById('err-receipt');
-    if (!receipt.files.length) {
-      errReceipt.classList.add('show');
-      ok = false;
-    } else {
-      errReceipt.classList.remove('show');
-    }
-    const declare = document.getElementById('f-declare');
-    const errDeclare = document.getElementById('err-declare');
-    if (!declare.checked) {
-      errDeclare.classList.add('show');
-      ok = false;
-    } else {
-      errDeclare.classList.remove('show');
-    }
+
+    // Each expense item
+    document.querySelectorAll('.expense-item').forEach(item => {
+      const id = item.id.replace('item-', '');
+
+      const amount = document.getElementById(`amount-${id}`);
+      const amtValid = parseFloat(amount.value) > 0;
+      amount.classList.toggle('error', !amtValid);
+      document.getElementById(`err-amount-${id}`).classList.toggle('show', !amtValid);
+      if (!amtValid) ok = false;
+
+      const date = document.getElementById(`date-${id}`);
+      const dateValid = date.value.length > 0;
+      date.classList.toggle('error', !dateValid);
+      document.getElementById(`err-date-${id}`).classList.toggle('show', !dateValid);
+      if (!dateValid) ok = false;
+
+      const cat = document.getElementById(`category-${id}`);
+      const catValid = cat.value.length > 0;
+      cat.classList.toggle('error', !catValid);
+      document.getElementById(`err-category-${id}`).classList.toggle('show', !catValid);
+      if (!catValid) ok = false;
+
+      const receipt = document.getElementById(`receipt-${id}`);
+      const recValid = receipt.files.length > 0;
+      document.getElementById(`err-receipt-${id}`).classList.toggle('show', !recValid);
+      if (!recValid) ok = false;
+    });
+
+    // Declaration
+    const dec = document.getElementById('f-declare');
+    const decValid = dec.checked;
+    document.getElementById('err-declare').classList.toggle('show', !decValid);
+    if (!decValid) ok = false;
+
     return ok;
   }
 
   function submitForm() {
-    if (!validate()) { return; }
+    if (!validate()) {
+      // Scroll to first error
+      const firstErr = document.querySelector('.error, .error-msg.show');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
     btn.textContent = 'Submitting...';
+
+    // Build summary
+    const items = [];
+    document.querySelectorAll('.expense-item').forEach(item => {
+      const id = item.id.replace('item-', '');
+      items.push({
+        category: document.getElementById(`category-${id}`).value,
+        amount: parseFloat(document.getElementById(`amount-${id}`).value) || 0,
+      });
+    });
+
     setTimeout(() => {
-      const ref = 'EXP-' + String(Math.floor(Math.random()*900)+100);
+      const ref = 'EXP-' + String(Math.floor(Math.random() * 900) + 100);
       document.getElementById('success-ref').textContent = ref;
+
+      // Build success summary table
+      let total = 0;
+      let rows = items.map(it => {
+        total += it.amount;
+        return `<div class="success-item-row"><span>${it.category}</span><span>$${it.amount.toFixed(2)}</span></div>`;
+      }).join('');
+      rows += `<div class="success-item-row"><span>Total</span><span>$${total.toFixed(2)}</span></div>`;
+      document.getElementById('success-items').innerHTML = rows;
+
       document.getElementById('form-view').style.display = 'none';
       document.getElementById('success-view').style.display = 'block';
       window.scrollTo(0, 0);
@@ -302,16 +397,17 @@
     document.getElementById('success-view').style.display = 'none';
     document.getElementById('submit-btn').disabled = false;
     document.getElementById('submit-btn').textContent = 'Submit expense claim →';
-    ['f-firstname','f-lastname','f-amount','f-property','f-notes'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('f-category').value = '';
-    document.getElementById('f-date').valueAsDate = new Date();
+    document.getElementById('f-firstname').value = '';
+    document.getElementById('f-lastname').value = '';
     document.getElementById('f-declare').checked = false;
-    document.getElementById('upload-zone').classList.remove('has-file');
-    document.getElementById('upload-preview').style.display = 'none';
-    window.scrollTo(0,0);
+    document.getElementById('expense-items').innerHTML = '';
+    itemCount = 0;
+    addExpenseItem();
+    window.scrollTo(0, 0);
   }
+
+  // Start with one expense item
+  addExpenseItem();
 </script>
 </body>
 </html>
