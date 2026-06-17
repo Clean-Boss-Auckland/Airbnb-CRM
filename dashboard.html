@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Overview – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Overview</div>
+        <div class="topbar-sub">Welcome back — here's what's happening at Clean Boss</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#6b7c93;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search..."/>
+      </div>
+      <button class="topbar-btn">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+    </div>
+
+    <div class="content">
+
+      <!-- Role switcher for demo -->
+      <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:12px;color:#856404;display:flex;align-items:center;gap:12px;">
+        <strong>Demo:</strong> viewing as
+        <select onchange="switchRole(this.value)" id="role-select" style="font-size:12px;padding:3px 8px;width:auto;border-radius:6px;">
+          <option value="admin">Admin</option>
+          <option value="operations">Operations</option>
+          <option value="property_manager">Property Manager</option>
+          <option value="cleaner">Cleaner</option>
+        </select>
+        — sidebar and access updates instantly
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <!-- Charts row -->
+      <div class="two-col-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Jobs this week</div>
+              <div class="card-sub">By status · last 7 days</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="jobs-chart" style="height:160px;display:flex;align-items:flex-end;gap:10px;padding-top:16px;"></div>
+            <div style="display:flex;gap:16px;margin-top:12px;">
+              <span style="font-size:12px;color:#6b7c93;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#22c55e;display:inline-block;"></span>Completed</span>
+              <span style="font-size:12px;color:#6b7c93;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#f59e0b;display:inline-block;"></span>In progress</span>
+              <span style="font-size:12px;color:#6b7c93;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#ef4444;display:inline-block;"></span>Issues</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Upcoming today</div>
+              <div class="card-sub">Jobs scheduled · June 17</div>
+            </div>
+            <a href="jobs.html" class="btn sm">View all</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Property</th><th>Cleaner</th><th>Time</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Palm Beach Villa</strong></td><td>Marcus Lee</td><td>9:00am</td><td><span class="pill green">Completed</span></td></tr>
+                <tr><td><strong>Takapuna Studio</strong></td><td>Sara Kim</td><td>11:30am</td><td><span class="pill amber">In progress</span></td></tr>
+                <tr><td><strong>Grey Lynn House</strong></td><td>Tom Walsh</td><td>2:00pm</td><td><span class="pill gray">Scheduled</span></td></tr>
+                <tr><td><strong>Parnell Apt 3B</strong></td><td>Unassigned</td><td>4:00pm</td><td><span class="pill red">Unassigned</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Access requests + Recent signups -->
+      <div class="two-col-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Access requests</div>
+              <div class="card-sub">Pending admin approval</div>
+            </div>
+            <a href="access-requests.html" class="btn sm">View all</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Requested</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Amy Chen</strong></td>
+                  <td style="color:#6b7c93;">amy.chen@email.com</td>
+                  <td style="color:#6b7c93;">2h ago</td>
+                  <td><a href="access-requests.html" class="btn sm success">Review</a></td>
+                </tr>
+                <tr>
+                  <td><strong>Daniel Park</strong></td>
+                  <td style="color:#6b7c93;">d.park@email.com</td>
+                  <td style="color:#6b7c93;">5h ago</td>
+                  <td><a href="access-requests.html" class="btn sm success">Review</a></td>
+                </tr>
+                <tr>
+                  <td><strong>Lena Bright</strong></td>
+                  <td style="color:#6b7c93;">lena.b@email.com</td>
+                  <td style="color:#6b7c93;">Yesterday</td>
+                  <td><a href="access-requests.html" class="btn sm success">Review</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Issues flagged</div>
+              <div class="card-sub">Reported by cleaners</div>
+            </div>
+            <a href="issues.html" class="btn sm">View all</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Property</th><th>Issue</th><th>Severity</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Takapuna Studio</strong></td><td>Broken shower rail</td><td><span class="pill amber">Medium</span></td></tr>
+                <tr><td><strong>Palm Beach Villa</strong></td><td>Missing towels</td><td><span class="pill gray">Low</span></td></tr>
+                <tr><td><strong>Parnell Apt 3B</strong></td><td>Water damage ceiling</td><td><span class="pill red">High</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  const user = CB.getSimulatedUser();
+  CB.init('overview', user);
+  document.getElementById('role-select').value = user.role;
+
+  function switchRole(role) {
+    window.location.href = 'dashboard.html?role=' + role;
+  }
+
+  const statsAdmin = [
+    { label: 'Total properties', value: '47', delta: '↑ 3 this week', icon: 'home', color: 'blue' },
+    { label: 'Active cleaners', value: '18', delta: '↑ 2 this month', icon: 'user-group', color: 'teal' },
+    { label: 'Jobs today', value: '24', delta: '4 unassigned', icon: 'clipboard-list', color: 'amber' },
+    { label: 'Pending approvals', value: '3', delta: 'Needs attention', icon: 'user-check', color: 'red' },
+  ];
+
+  const statsOps = [
+    { label: 'Jobs today', value: '24', delta: '4 unassigned', icon: 'clipboard-list', color: 'blue' },
+    { label: 'Active cleaners', value: '18', delta: '3 on break', icon: 'user-group', color: 'teal' },
+    { label: 'Issues open', value: '5', delta: '2 high priority', icon: 'alert-triangle', color: 'red' },
+    { label: 'Completed today', value: '12', delta: '↑ 18% vs avg', icon: 'check-circle', color: 'green' },
+  ];
+
+  const statsPM = [
+    { label: 'My properties', value: '6', delta: 'All active', icon: 'home', color: 'blue' },
+    { label: 'Upcoming bookings', value: '14', delta: 'Next 7 days', icon: 'calendar', color: 'purple' },
+    { label: 'Cleans today', value: '4', delta: '2 complete', icon: 'check-circle', color: 'green' },
+    { label: 'Open issues', value: '2', delta: '1 high severity', icon: 'alert-triangle', color: 'amber' },
+  ];
+
+  const statsCleaner = [
+    { label: 'My jobs today', value: '3', delta: '1 complete', icon: 'clipboard-list', color: 'blue' },
+    { label: 'Next job', value: '2pm', delta: 'Grey Lynn House', icon: 'clock', color: 'teal' },
+    { label: 'Completed this week', value: '14', delta: 'Great work!', icon: 'check-circle', color: 'green' },
+    { label: 'Issues reported', value: '1', delta: 'This week', icon: 'alert-triangle', color: 'amber' },
+  ];
+
+  const statsMap = { admin: statsAdmin, operations: statsOps, property_manager: statsPM, cleaner: statsCleaner };
+  const stats = statsMap[user.role] || statsAdmin;
+
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-icon ${s.color}">${CB.icons[s.icon] || CB.icons['home']}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-delta">${s.delta}</div>
+    </div>
+  `).join('');
+
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals = [[8,2,1],[10,3,0],[6,4,2],[12,1,1],[9,5,0],[14,2,1],[11,3,2]];
+  const max = 20;
+  const chart = document.getElementById('jobs-chart');
+  chart.innerHTML = days.map((d,i) => {
+    const [c,p,is] = vals[i];
+    const total = c+p+is;
+    const h = Math.round((total/max)*140);
+    const ch = Math.round((c/total)*h);
+    const ph = Math.round((p/total)*h);
+    const ih = h-ch-ph;
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+      <div style="width:100%;display:flex;flex-direction:column;gap:2px;height:140px;justify-content:flex-end;">
+        <div style="background:#ef4444;border-radius:3px 3px 0 0;height:${ih}px;"></div>
+        <div style="background:#f59e0b;height:${ph}px;"></div>
+        <div style="background:#22c55e;border-radius:0 0 3px 3px;height:${ch}px;"></div>
+      </div>
+      <div style="font-size:11px;color:#6b7c93;margin-top:4px;">${d}</div>
+    </div>`;
+  }).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Users – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">All users</div>
+        <div class="topbar-sub">Manage roles and access</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#6b7c93;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search users..." oninput="filterUsers(this.value)" id="search-input"/>
+      </div>
+      <select id="role-filter" onchange="filterUsers()" style="width:160px;font-size:13px;padding:7px 12px;">
+        <option value="">All roles</option>
+        <option value="admin">Admin</option>
+        <option value="operations">Operations</option>
+        <option value="property_manager">Property Manager</option>
+        <option value="cleaner">Cleaner</option>
+      </select>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">22 active users</div>
+          <a href="access-requests.html" class="btn sm"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Invite user</a>
+        </div>
+        <table>
+          <thead>
+            <tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Last active</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit user modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title" id="edit-title">Edit user</div>
+    <div class="modal-sub" id="edit-sub">Update role and access</div>
+
+    <div class="form-group">
+      <label class="form-label">Role</label>
+      <select id="edit-role">
+        <option value="cleaner">Cleaner</option>
+        <option value="property_manager">Property Manager</option>
+        <option value="operations">Operations</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select id="edit-status">
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </div>
+
+    <div style="border-top:1px solid #e5e7eb;margin:16px 0;padding-top:16px;">
+      <div style="font-size:12px;font-weight:700;margin-bottom:12px;color:#1a2535;">Custom permissions overrides</div>
+      <div style="font-size:12px;color:#6b7c93;margin-bottom:12px;">Toggle individual pages on/off for this user, overriding their role defaults.</div>
+      <div id="perm-toggles"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn danger sm" onclick="closeEditModal()">Cancel</button>
+      <button class="btn primary" onclick="saveUser()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('users', CB.getSimulatedUser());
+
+  const allUsers = [
+    { id:1, name:'Sarah Mitchell', initials:'SM', color:'#0d1b2e', email:'sarah@cleanboss.co.nz', role:'admin', status:'active', last:'Just now' },
+    { id:2, name:'James Tahi', initials:'JT', color:'#8b5cf6', email:'james@cleanboss.co.nz', role:'operations', status:'active', last:'1h ago' },
+    { id:3, name:'Priya Nair', initials:'PN', color:'#3b9de0', email:'priya@outlook.com', role:'property_manager', status:'active', last:'3h ago' },
+    { id:4, name:'Marcus Lee', initials:'ML', color:'#14b8a6', email:'marcus@email.com', role:'cleaner', status:'active', last:'Today 9am' },
+    { id:5, name:'Sara Kim', initials:'SK', color:'#14b8a6', email:'sara.k@email.com', role:'cleaner', status:'active', last:'Today 11am' },
+    { id:6, name:'Tom Walsh', initials:'TW', color:'#14b8a6', email:'tom.w@email.com', role:'cleaner', status:'active', last:'Yesterday' },
+    { id:7, name:'Rachel Webb', initials:'RW', color:'#3b9de0', email:'r.webb@email.com', role:'property_manager', status:'active', last:'2 days ago' },
+    { id:8, name:'Jake Kim', initials:'JK', color:'#14b8a6', email:'jake.k@email.com', role:'cleaner', status:'active', last:'3 days ago' },
+    { id:9, name:'Nina Patel', initials:'NP', color:'#8b5cf6', email:'nina.p@cleanboss.co.nz', role:'operations', status:'active', last:'1 week ago' },
+    { id:10, name:'Old Account', initials:'OA', color:'#9ca3af', email:'old@test.com', role:'cleaner', status:'suspended', last:'1 month ago' },
+  ];
+
+  const allPages = ['overview','access-requests','users','permissions','properties','jobs','schedules','cleaners','reports','settings','my-jobs','checklist','property-detail','upload-photos','report-issue','bookings','cleaning-status','issues'];
+
+  let activeUserId = null;
+
+  function renderUsers(list) {
+    const roleLabels = { admin:'Admin', operations:'Operations', property_manager:'Property Manager', cleaner:'Cleaner' };
+    document.getElementById('users-tbody').innerHTML = list.map(u => `
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="width:32px;height:32px;font-size:12px;background:${u.color};">${u.initials}</div><strong>${u.name}</strong></div></td>
+        <td style="color:#6b7c93;">${u.email}</td>
+        <td><span class="pill ${u.role === 'admin' ? 'gray' : u.role === 'operations' ? 'purple' : u.role === 'property_manager' ? 'blue' : 'teal'}">${roleLabels[u.role]}</span></td>
+        <td><span class="pill ${u.status === 'active' ? 'green' : 'red'}"><span class="dot ${u.status === 'active' ? 'green' : 'red'}"></span>${u.status}</span></td>
+        <td style="color:#6b7c93;">${u.last}</td>
+        <td><div style="display:flex;gap:6px;">
+          <button class="btn sm" onclick="openEdit(${u.id})">Edit</button>
+          <button class="btn sm danger" onclick="suspendUser(${u.id})">${u.status === 'active' ? 'Suspend' : 'Restore'}</button>
+        </div></td>
+      </tr>
+    `).join('');
+  }
+
+  renderUsers(allUsers);
+
+  function filterUsers(val) {
+    const q = (val || document.getElementById('search-input').value).toLowerCase();
+    const r = document.getElementById('role-filter').value;
+    renderUsers(allUsers.filter(u =>
+      (!q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) &&
+      (!r || u.role === r)
+    ));
+  }
+
+  function openEdit(id) {
+    activeUserId = id;
+    const u = allUsers.find(x => x.id === id);
+    document.getElementById('edit-title').textContent = `Edit: ${u.name}`;
+    document.getElementById('edit-sub').textContent = u.email;
+    document.getElementById('edit-role').value = u.role;
+    document.getElementById('edit-status').value = u.status;
+
+    const rolePages = CB.roles[u.role]?.pages || [];
+    document.getElementById('perm-toggles').innerHTML = allPages.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:13px;color:#1a2535;">${p.replace(/-/g,' ')}</span>
+        <label class="toggle">
+          <input type="checkbox" ${rolePages.includes(p) ? 'checked' : ''} onchange=""/>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    `).join('');
+
+    document.getElementById('edit-modal').classList.add('open');
+  }
+
+  function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
+
+  function saveUser() {
+    closeEditModal();
+    showToast('User updated successfully', 'green');
+  }
+
+  function suspendUser(id) {
+    const u = allUsers.find(x => x.id === id);
+    u.status = u.status === 'active' ? 'suspended' : 'active';
+    filterUsers();
+    showToast(u.status === 'active' ? 'User restored' : 'User suspended', u.status === 'active' ? 'green' : 'red');
+  }
+
+  function showToast(msg, color) {
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${color==='green'?'#166534':'#991b1b'};color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>

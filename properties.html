@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Properties – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Properties</div>
+        <div class="topbar-sub">47 properties under management</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#6b7c93;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search properties..." oninput="filterProps(this.value)"/>
+      </div>
+      <button class="topbar-btn primary" onclick="document.getElementById('add-modal').classList.add('open')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add property
+      </button>
+    </div>
+
+    <div class="content">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="props-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add property modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">Add property</div>
+    <div class="modal-sub">Add a new Airbnb property to the system</div>
+    <div class="form-group"><label class="form-label">Property name</label><input type="text" placeholder="e.g. Palm Beach Villa"/></div>
+    <div class="form-group"><label class="form-label">Address</label><input type="text" placeholder="14 Ocean View Rd, Beachlands"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group"><label class="form-label">Bedrooms</label><input type="number" value="3"/></div>
+      <div class="form-group"><label class="form-label">Bathrooms</label><input type="number" value="2"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Assign property manager</label>
+      <select><option>Priya Nair</option><option>Rachel Webb</option><option>Unassigned</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Airbnb listing URL</label><input type="text" placeholder="https://airbnb.com/rooms/..."/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="document.getElementById('add-modal').classList.remove('open')">Cancel</button>
+      <button class="btn primary" onclick="addProp()">Add property</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('properties', CB.getSimulatedUser());
+
+  const properties = [
+    { id:1, name:'Palm Beach Villa', address:'14 Ocean View Rd, Beachlands', bedrooms:4, bathrooms:2, manager:'Priya Nair', status:'active', nextClean:'Today 9am', lastClean:'Jun 14' },
+    { id:2, name:'Takapuna Studio', address:'12 Esmonde Rd, Takapuna', bedrooms:1, bathrooms:1, manager:'Rachel Webb', status:'active', nextClean:'Today 11:30am', lastClean:'Jun 15' },
+    { id:3, name:'Grey Lynn House', address:'88 Richmond Rd, Grey Lynn', bedrooms:3, bathrooms:1, manager:'Priya Nair', status:'active', nextClean:'Today 2pm', lastClean:'Jun 10' },
+    { id:4, name:'Parnell Apt 3B', address:'22 St Stephens Ave, Parnell', bedrooms:2, bathrooms:1, manager:'Rachel Webb', status:'active', nextClean:'Today 4pm', lastClean:'Jun 12' },
+    { id:5, name:'Ponsonby Studio', address:'3/42 Ponsonby Rd, Ponsonby', bedrooms:1, bathrooms:1, manager:'Priya Nair', status:'active', nextClean:'Today 5pm', lastClean:'Jun 16' },
+    { id:6, name:'Newmarket Apt', address:'5 Khyber Pass, Newmarket', bedrooms:2, bathrooms:1, manager:'Rachel Webb', status:'issue', nextClean:'Tomorrow', lastClean:'Jun 17' },
+    { id:7, name:'Mt Eden Home', address:'7 Valley Rd, Mt Eden', bedrooms:3, bathrooms:2, manager:'Priya Nair', status:'active', nextClean:'Jun 19', lastClean:'Jun 13' },
+    { id:8, name:'Remuera House', address:'4 Upland Rd, Remuera', bedrooms:5, bathrooms:3, manager:'Rachel Webb', status:'active', nextClean:'Jun 20', lastClean:'Jun 17' },
+  ];
+
+  function renderProps(list) {
+    document.getElementById('props-grid').innerHTML = list.map(p => `
+      <div class="card">
+        <div style="background:${p.status==='issue'?'#fef3c7':'#e8f4fd'};height:80px;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 24 24" style="width:32px;height:32px;stroke:${p.status==='issue'?'#92400e':'#0c447c'};fill:none;stroke-width:1.5;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div style="padding:16px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+            <div>
+              <div style="font-weight:700;font-size:14px;">${p.name}</div>
+              <div style="font-size:12px;color:#6b7c93;margin-top:2px;">${p.address}</div>
+            </div>
+            <span class="pill ${p.status==='issue'?'amber':'green'}" style="flex-shrink:0;">${p.status==='issue'?'Issue':'Active'}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">
+            <div style="background:#f9fafb;border-radius:6px;padding:8px;">
+              <div style="font-size:10px;color:#6b7c93;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Bedrooms</div>
+              <div style="font-weight:700;font-size:15px;">${p.bedrooms}</div>
+            </div>
+            <div style="background:#f9fafb;border-radius:6px;padding:8px;">
+              <div style="font-size:10px;color:#6b7c93;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Bathrooms</div>
+              <div style="font-weight:700;font-size:15px;">${p.bathrooms}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">Manager: <strong style="color:#1a2535;">${p.manager}</strong></div>
+          <div style="font-size:12px;color:#6b7c93;margin-bottom:12px;">Next clean: <strong style="color:#1a2535;">${p.nextClean}</strong></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn sm" style="flex:1;" onclick="viewProp(${p.id})">View</button>
+            <button class="btn sm" onclick="editProp(${p.id})">Edit</button>
+            ${p.status==='issue'?`<a href="issues.html" class="btn sm danger">Issue</a>`:''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderProps(properties);
+
+  function filterProps(q) {
+    renderProps(properties.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.address.toLowerCase().includes(q.toLowerCase())));
+  }
+
+  function viewProp(id) { alert('View property ' + id + ' — connect to Supabase for full detail'); }
+  function editProp(id) { alert('Edit property ' + id); }
+
+  function addProp() {
+    document.getElementById('add-modal').classList.remove('open');
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ Property added';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>

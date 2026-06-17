@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jobs – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Jobs</div>
+        <div class="topbar-sub">All cleaning jobs · today</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <select id="status-filter" style="width:150px;font-size:13px;padding:7px 12px;" onchange="filterJobs()">
+        <option value="">All statuses</option>
+        <option value="completed">Completed</option>
+        <option value="in-progress">In progress</option>
+        <option value="scheduled">Scheduled</option>
+        <option value="unassigned">Unassigned</option>
+        <option value="issue-flagged">Issue flagged</option>
+      </select>
+      <button class="topbar-btn primary" onclick="document.getElementById('new-job-modal').classList.add('open')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New job
+      </button>
+    </div>
+
+    <div class="content">
+      <!-- Mini stats -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;" id="job-stats"></div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Address</th><th>Time</th><th>Cleaner</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="jobs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New job modal -->
+<div class="modal-overlay" id="new-job-modal">
+  <div class="modal">
+    <div class="modal-title">Create new job</div>
+    <div class="modal-sub">Schedule a cleaning job</div>
+    <div class="form-group">
+      <label class="form-label">Property</label>
+      <select><option>Palm Beach Villa</option><option>Takapuna Studio</option><option>Grey Lynn House</option><option>Parnell Apt 3B</option><option>Ponsonby Studio</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" value="2026-06-17"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time</label>
+        <input type="time" value="09:00"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assign cleaner</label>
+      <select><option>Unassigned</option><option>Marcus Lee</option><option>Sara Kim</option><option>Tom Walsh</option><option>Jake Kim</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea rows="2" placeholder="Access code, special instructions..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="document.getElementById('new-job-modal').classList.remove('open')">Cancel</button>
+      <button class="btn primary" onclick="createJob()">Create job</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('jobs', CB.getSimulatedUser());
+
+  const jobs = [
+    { id:1, property:'Palm Beach Villa', address:'14 Ocean View Rd', time:'9:00am', cleaner:'Marcus Lee', status:'completed' },
+    { id:2, property:'Takapuna Studio', address:'12 Esmonde Rd', time:'11:30am', cleaner:'Sara Kim', status:'in-progress' },
+    { id:3, property:'Grey Lynn House', address:'88 Richmond Rd', time:'2:00pm', cleaner:'Tom Walsh', status:'scheduled' },
+    { id:4, property:'Parnell Apt 3B', address:'22 St Stephens Ave', time:'4:00pm', cleaner:'—', status:'unassigned' },
+    { id:5, property:'Ponsonby Studio', address:'3/42 Ponsonby Rd', time:'5:00pm', cleaner:'Marcus Lee', status:'scheduled' },
+    { id:6, property:'Newmarket Apt', address:'5 Khyber Pass', time:'10:00am', cleaner:'Jake Kim', status:'issue-flagged' },
+    { id:7, property:'Mt Eden Home', address:'7 Valley Rd', time:'1:00pm', cleaner:'Sara Kim', status:'completed' },
+    { id:8, property:'Remuera House', address:'4 Upland Rd', time:'3:30pm', cleaner:'Tom Walsh', status:'completed' },
+  ];
+
+  const statusConfig = {
+    'completed': { pill:'green', label:'Completed' },
+    'in-progress': { pill:'amber', label:'In progress' },
+    'scheduled': { pill:'blue', label:'Scheduled' },
+    'unassigned': { pill:'red', label:'Unassigned' },
+    'issue-flagged': { pill:'purple', label:'Issue flagged' },
+  };
+
+  function renderStats(list) {
+    const counts = { completed:0, 'in-progress':0, scheduled:0, unassigned:0, 'issue-flagged':0 };
+    list.forEach(j => counts[j.status] = (counts[j.status]||0) + 1);
+    const items = [
+      { label:'Total', value:list.length, color:'blue' },
+      { label:'Completed', value:counts.completed, color:'green' },
+      { label:'In progress', value:counts['in-progress'], color:'amber' },
+      { label:'Unassigned', value:counts.unassigned, color:'red' },
+      { label:'Issues', value:counts['issue-flagged'], color:'purple' },
+    ];
+    document.getElementById('job-stats').innerHTML = items.map(s => `
+      <div class="stat-card" style="padding:14px;">
+        <div class="stat-label">${s.label}</div>
+        <div class="stat-value" style="font-size:22px;">${s.value}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderJobs(list) {
+    document.getElementById('jobs-tbody').innerHTML = list.map(j => {
+      const s = statusConfig[j.status] || { pill:'gray', label:j.status };
+      return `
+        <tr>
+          <td><strong>${j.property}</strong></td>
+          <td style="color:#6b7c93;">${j.address}</td>
+          <td style="font-weight:600;">${j.time}</td>
+          <td>${j.cleaner === '—' ? '<span style="color:#ef4444;font-weight:600;">Unassigned</span>' : j.cleaner}</td>
+          <td><span class="pill ${s.pill}">${s.label}</span></td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              ${j.cleaner === '—' ? `<button class="btn sm primary" onclick="assignCleaner(${j.id})">Assign</button>` : `<button class="btn sm" onclick="viewJob(${j.id})">View</button>`}
+              ${j.status === 'issue-flagged' ? `<a href="issues.html" class="btn sm danger">Issue</a>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    renderStats(list);
+  }
+
+  function filterJobs() {
+    const s = document.getElementById('status-filter').value;
+    renderJobs(s ? jobs.filter(j => j.status === s) : jobs);
+  }
+
+  renderJobs(jobs);
+
+  function viewJob(id) { alert('Job detail: connect to jobs/' + id + ' in Supabase'); }
+
+  function assignCleaner(id) {
+    const j = jobs.find(x => x.id === id);
+    const cleaner = prompt('Assign cleaner (Marcus Lee / Sara Kim / Tom Walsh / Jake Kim):');
+    if (cleaner) { j.cleaner = cleaner; j.status = 'scheduled'; filterJobs(); }
+  }
+
+  function createJob() {
+    document.getElementById('new-job-modal').classList.remove('open');
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ Job created successfully';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>

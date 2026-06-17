@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Jobs – Clean Boss</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">My jobs</div>
+        <div class="topbar-sub">Tuesday 17 June 2026</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <span class="pill green" style="font-size:13px;padding:6px 14px;"><span class="dot green"></span>On duty</span>
+    </div>
+
+    <div class="content">
+
+      <!-- Today's jobs -->
+      <div style="margin-bottom:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#6b7c93;">Today</div>
+
+      <div id="jobs-list"></div>
+
+      <!-- This week -->
+      <div style="margin:24px 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#6b7c93;">Upcoming this week</div>
+
+      <div class="card">
+        <table>
+          <thead><tr><th>Date</th><th>Property</th><th>Address</th><th>Time</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#6b7c93;">Wed 18</td><td><strong>Takapuna Studio</strong></td><td style="color:#6b7c93;">12 Esmonde Rd</td><td>9:00am</td><td style="color:#6b7c93;">Linen change</td></tr>
+            <tr><td style="color:#6b7c93;">Thu 19</td><td><strong>Newmarket Apt</strong></td><td style="color:#6b7c93;">5 Khyber Pass</td><td>11:00am</td><td style="color:#6b7c93;">Full clean</td></tr>
+            <tr><td style="color:#6b7c93;">Fri 20</td><td><strong>Parnell Apt 3B</strong></td><td style="color:#6b7c93;">22 St Stephens Ave</td><td>2:00pm</td><td style="color:#6b7c93;">Standard turnover</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Job detail sheet -->
+<div class="modal-overlay" id="job-modal">
+  <div class="modal" style="width:540px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div class="modal-title" id="job-modal-title">Job details</div>
+        <div class="modal-sub" id="job-modal-addr"></div>
+      </div>
+      <button class="btn sm" onclick="closeJobModal()">✕</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;" id="job-modal-meta"></div>
+
+    <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:#1a2535;">Checklist</div>
+    <div id="job-checklist"></div>
+
+    <div class="modal-actions">
+      <a href="upload-photos.html" class="btn">Upload photos</a>
+      <a href="report-issue.html" class="btn danger">Report issue</a>
+      <button class="btn primary" onclick="markComplete()">Mark complete</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('my-jobs', { name: 'Marcus Lee', initials: 'ML', role: 'cleaner' });
+
+  const jobs = [
+    { id:1, property:'Palm Beach Villa', address:'14 Ocean View Rd, Beachlands', time:'9:00am – 11:00am', status:'completed', bedrooms:4, bathrooms:2, notes:'Guests checked out at 8am. Fresh linen in laundry cupboard.', checklist:['Vacuum all rooms','Mop hard floors','Clean bathrooms','Change all linen','Wipe kitchen surfaces','Restock toiletries','Check for damage','Take completion photos'] },
+    { id:2, property:'Grey Lynn House', address:'88 Richmond Rd, Grey Lynn', time:'2:00pm – 4:00pm', status:'scheduled', bedrooms:3, bathrooms:1, notes:'Key in lockbox: 4821. Park on street.', checklist:['Vacuum all rooms','Mop hard floors','Clean bathrooms','Change all linen','Wipe kitchen surfaces','Empty bins','Check windows','Take completion photos'] },
+    { id:3, property:'Ponsonby Studio', address:'3/42 Ponsonby Rd, Ponsonby', time:'5:00pm – 6:00pm', status:'scheduled', bedrooms:1, bathrooms:1, notes:'Small studio. Should be quick.', checklist:['Vacuum','Clean bathroom','Change linen','Wipe surfaces','Take completion photos'] },
+  ];
+
+  function renderJobs() {
+    document.getElementById('jobs-list').innerHTML = jobs.map(j => `
+      <div class="card" style="margin-bottom:12px;cursor:pointer;" onclick="openJob(${j.id})">
+        <div style="padding:18px 20px;display:flex;align-items:center;gap:16px;">
+          <div style="width:48px;height:48px;border-radius:10px;background:${j.status==='completed'?'#dcfce7':j.status==='in-progress'?'#fef3c7':'#e8f4fd'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:${j.status==='completed'?'#166534':j.status==='in-progress'?'#92400e':'#0c447c'};fill:none;stroke-width:1.8;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:14px;margin-bottom:2px;">${j.property}</div>
+            <div style="font-size:12px;color:#6b7c93;">${j.address}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;">${j.time}</div>
+            <span class="pill ${j.status==='completed'?'green':j.status==='in-progress'?'amber':'blue'}">${j.status}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderJobs();
+
+  function openJob(id) {
+    const j = jobs.find(x => x.id === id);
+    document.getElementById('job-modal-title').textContent = j.property;
+    document.getElementById('job-modal-addr').textContent = j.address;
+    document.getElementById('job-modal-meta').innerHTML = `
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Time</div><div style="font-size:15px;font-weight:700;">${j.time}</div></div>
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Status</div><div style="margin-top:4px;"><span class="pill ${j.status==='completed'?'green':j.status==='in-progress'?'amber':'blue'}">${j.status}</span></div></div>
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Bedrooms</div><div style="font-size:15px;font-weight:700;">${j.bedrooms}</div></div>
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Bathrooms</div><div style="font-size:15px;font-weight:700;">${j.bathrooms}</div></div>
+    `;
+    if (j.notes) {
+      document.getElementById('job-modal-meta').innerHTML += `<div class="stat-card" style="padding:12px;grid-column:1/-1;"><div class="stat-label">Notes</div><div style="font-size:13px;color:#1a2535;margin-top:2px;">${j.notes}</div></div>`;
+    }
+
+    const checks = j.checklist.map((item, i) => `
+      <div class="checklist-item">
+        <div class="check-box ${j.status==='completed'?'checked':''}" id="chk-${i}" onclick="toggleCheck(${i})"></div>
+        <span style="font-size:13px;${j.status==='completed'?'text-decoration:line-through;color:#6b7c93;':''}">${item}</span>
+      </div>
+    `).join('');
+    document.getElementById('job-checklist').innerHTML = checks;
+    document.getElementById('job-modal').classList.add('open');
+  }
+
+  function toggleCheck(i) {
+    const box = document.getElementById(`chk-${i}`);
+    box.classList.toggle('checked');
+  }
+
+  function closeJobModal() { document.getElementById('job-modal').classList.remove('open'); }
+
+  function markComplete() {
+    closeJobModal();
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ Job marked as complete';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>
