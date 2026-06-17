@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Settings</div>
+        <div class="topbar-sub">System configuration</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <button class="topbar-btn primary" onclick="saveSettings()">Save changes</button>
+    </div>
+
+    <div class="content" style="max-width:720px;">
+
+      <!-- Company details -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><div class="card-title">Company details</div></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group"><label class="form-label">Company name</label><input type="text" value="Clean Boss NZ"/></div>
+            <div class="form-group"><label class="form-label">Contact email</label><input type="email" value="hello@cleanboss.co.nz"/></div>
+            <div class="form-group"><label class="form-label">Phone</label><input type="text" value="+64 9 000 0000"/></div>
+            <div class="form-group"><label class="form-label">Region</label>
+              <select><option>Auckland, NZ</option><option>Wellington, NZ</option><option>Christchurch, NZ</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><div class="card-title">Notifications</div></div>
+        <div class="card-body" style="padding:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f3f4f6;">
+            <div><div style="font-size:13px;font-weight:600;">Email on new sign-up</div><div style="font-size:12px;color:#6b7c93;">Notify admin when someone requests access</div></div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f3f4f6;">
+            <div><div style="font-size:13px;font-weight:600;">Email on issue reported</div><div style="font-size:12px;color:#6b7c93;">Notify operations when a cleaner flags an issue</div></div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f3f4f6;">
+            <div><div style="font-size:13px;font-weight:600;">Job completion alerts</div><div style="font-size:12px;color:#6b7c93;">Notify property manager when a clean is done</div></div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;">
+            <div><div style="font-size:13px;font-weight:600;">Unassigned job reminders</div><div style="font-size:12px;color:#6b7c93;">Alert operations if a job is unassigned 2hrs before start</div></div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supabase connection -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header">
+          <div><div class="card-title">Supabase connection</div><div class="card-sub">Connect your database for live data</div></div>
+          <span class="pill amber">Not connected</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group"><label class="form-label">Supabase project URL</label><input type="text" placeholder="https://xxxx.supabase.co"/></div>
+          <div class="form-group"><label class="form-label">Supabase anon key</label><input type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."/></div>
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:12px;color:#92400e;margin-top:4px;">
+            Add these values to connect live authentication, user management, jobs, and properties. Keep your keys private — never commit them to a public GitHub repo. Use Vercel environment variables instead.
+          </div>
+          <button class="btn primary" style="margin-top:14px;" onclick="testConnection()">Test connection</button>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="card" style="border-color:#fca5a5;">
+        <div class="card-header" style="background:#fff5f5;"><div class="card-title" style="color:#991b1b;">Danger zone</div></div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+            <div><div style="font-size:13px;font-weight:600;">Reset all demo data</div><div style="font-size:12px;color:#6b7c93;">Removes all placeholder jobs, users, and properties</div></div>
+            <button class="btn danger" onclick="confirmReset()">Reset data</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('settings', CB.getSimulatedUser());
+
+  function saveSettings() {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ Settings saved';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  function testConnection() {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#991b1b;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✗ No URL entered — add your Supabase URL first';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 4000);
+  }
+
+  function confirmReset() {
+    if (confirm('Are you sure? This will clear all demo data.')) {
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+      t.textContent = '✓ Demo data reset';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+  }
+</script>
+</body>
+</html>

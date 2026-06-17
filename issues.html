@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Issues – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Issues</div>
+        <div class="topbar-sub">Damage and problems reported by cleaners</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <span class="pill red" style="font-size:13px;padding:6px 14px;">3 open</span>
+    </div>
+    <div class="content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All issues</div>
+          <select style="font-size:13px;padding:6px 10px;width:140px;" onchange="filterIssues(this.value)">
+            <option value="">All</option>
+            <option value="open">Open</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Property</th><th>Reported by</th><th>Issue</th><th>Severity</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="issues-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="issue-modal">
+  <div class="modal">
+    <div class="modal-title" id="issue-modal-title">Issue detail</div>
+    <div class="modal-sub" id="issue-modal-sub"></div>
+    <div id="issue-modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="document.getElementById('issue-modal').classList.remove('open')">Close</button>
+      <button class="btn primary" onclick="resolveIssue()">Mark resolved</button>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script>
+  CB.init('issues', CB.getSimulatedUser());
+  const issues = [
+    { id:1, property:'Parnell Apt 3B', cleaner:'Marcus Lee', issue:'Water damage on ceiling in bathroom', severity:'high', date:'Today', status:'open', notes:'Appears to be a leak from unit above. Needs plumber ASAP.' },
+    { id:2, property:'Takapuna Studio', cleaner:'Sara Kim', issue:'Broken shower rail', severity:'medium', date:'Today', status:'open', notes:'Rail has come away from wall on one side. Guest can still use shower.' },
+    { id:3, property:'Palm Beach Villa', cleaner:'Marcus Lee', issue:'Missing towels (2 bath towels)', severity:'low', date:'Today', status:'open', notes:'Could not locate replacement towels in linen cupboard.' },
+    { id:4, property:'Grey Lynn House', cleaner:'Tom Walsh', issue:'Cracked tile in kitchen', severity:'low', date:'Jun 15', status:'resolved', notes:'Tile cracked near dishwasher. Logged for repair.' },
+    { id:5, property:'Newmarket Apt', cleaner:'Jake Kim', issue:'Oven not working', severity:'high', date:'Jun 14', status:'resolved', notes:'Oven completely dead. Property manager notified, electrician booked.' },
+  ];
+  let activeId = null;
+  function renderIssues(list) {
+    document.getElementById('issues-tbody').innerHTML = list.map(i => `
+      <tr>
+        <td><strong>${i.property}</strong></td>
+        <td style="color:#6b7c93;">${i.cleaner}</td>
+        <td>${i.issue}</td>
+        <td><span class="pill ${i.severity==='high'?'red':i.severity==='medium'?'amber':'gray'}">${i.severity}</span></td>
+        <td style="color:#6b7c93;">${i.date}</td>
+        <td><span class="pill ${i.status==='open'?'red':'green'}">${i.status}</span></td>
+        <td><button class="btn sm" onclick="openIssue(${i.id})">View</button></td>
+      </tr>`).join('');
+  }
+  renderIssues(issues);
+  function filterIssues(s) { renderIssues(s ? issues.filter(i => i.status===s) : issues); }
+  function openIssue(id) {
+    activeId = id;
+    const i = issues.find(x => x.id===id);
+    document.getElementById('issue-modal-title').textContent = i.property;
+    document.getElementById('issue-modal-sub').textContent = i.issue;
+    document.getElementById('issue-modal-body').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div class="stat-card" style="padding:12px;"><div class="stat-label">Severity</div><div style="margin-top:4px;"><span class="pill ${i.severity==='high'?'red':i.severity==='medium'?'amber':'gray'}">${i.severity}</span></div></div>
+        <div class="stat-card" style="padding:12px;"><div class="stat-label">Reported by</div><div style="font-weight:600;margin-top:4px;">${i.cleaner}</div></div>
+        <div class="stat-card" style="padding:12px;"><div class="stat-label">Date</div><div style="font-weight:600;margin-top:4px;">${i.date}</div></div>
+        <div class="stat-card" style="padding:12px;"><div class="stat-label">Status</div><div style="margin-top:4px;"><span class="pill ${i.status==='open'?'red':'green'}">${i.status}</span></div></div>
+      </div>
+      <div style="background:#f9fafb;border-radius:8px;padding:14px;font-size:13px;color:#1a2535;"><strong>Notes:</strong> ${i.notes}</div>`;
+    document.getElementById('issue-modal').classList.add('open');
+  }
+  function resolveIssue() {
+    const i = issues.find(x => x.id===activeId);
+    if(i) i.status='resolved';
+    document.getElementById('issue-modal').classList.remove('open');
+    renderIssues(issues);
+  }
+</script>
+</body>
+</html>

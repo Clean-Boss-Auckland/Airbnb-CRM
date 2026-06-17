@@ -451,8 +451,15 @@
       alert('Password must be at least 8 characters.');
       return;
     }
-    // Connect your auth logic here
-    alert('Sign up functionality coming soon!');
+    // Demo: show pending message (replace with Supabase auth later)
+    document.querySelector('.form-card').innerHTML = `
+      <div style="text-align:center;padding:40px 20px;">
+        <div style="width:64px;height:64px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;">✓</div>
+        <h2 style="font-size:20px;font-weight:800;color:#0d1b2e;margin-bottom:8px;">Request submitted!</h2>
+        <p style="font-size:14px;color:#6b7c93;line-height:1.7;margin-bottom:24px;">Your account is pending approval from a Clean Boss admin. You'll receive an email once you've been granted access.</p>
+        <a href="index.html" style="display:inline-block;padding:12px 24px;background:#0d1b2e;color:white;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;">Back to home</a>
+      </div>
+    `;
   }
 </script>
 

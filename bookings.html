@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookings – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Bookings</div>
+        <div class="topbar-sub">Upcoming guest bookings and turnovers</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <select style="width:180px;font-size:13px;padding:7px 12px;">
+        <option>All properties</option>
+        <option>Palm Beach Villa</option>
+        <option>Takapuna Studio</option>
+        <option>Grey Lynn House</option>
+        <option>Parnell Apt 3B</option>
+      </select>
+    </div>
+
+    <div class="content">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">Bookings this month</div><div class="stat-value">24</div><div class="stat-delta">↑ 3 vs last month</div></div>
+        <div class="stat-card"><div class="stat-label">Turnovers needed</div><div class="stat-value">18</div><div class="stat-delta">All scheduled</div></div>
+        <div class="stat-card"><div class="stat-label">Occupancy rate</div><div class="stat-value">78%</div><div class="stat-delta">↑ 5% vs last month</div></div>
+        <div class="stat-card"><div class="stat-label">Avg stay length</div><div class="stat-value">3.2</div><div class="stat-delta neu">nights</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Upcoming bookings</div><div class="card-sub">Next 14 days</div></div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Guest check-in</th><th>Guest check-out</th><th>Nights</th><th>Turnover clean</th><th>Clean status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Palm Beach Villa</strong></td>
+              <td>Today 3pm</td>
+              <td>Jun 20</td>
+              <td>3</td>
+              <td><span style="color:#6b7c93;">Jun 20 – 9am</span></td>
+              <td><span class="pill green">Clean done</span></td>
+            </tr>
+            <tr>
+              <td><strong>Takapuna Studio</strong></td>
+              <td>Today 4pm</td>
+              <td>Jun 19</td>
+              <td>2</td>
+              <td><span style="color:#6b7c93;">Jun 19 – 10am</span></td>
+              <td><span class="pill amber">In progress</span></td>
+            </tr>
+            <tr>
+              <td><strong>Grey Lynn House</strong></td>
+              <td>Jun 18 2pm</td>
+              <td>Jun 21</td>
+              <td>3</td>
+              <td><span style="color:#6b7c93;">Jun 21 – 9am</span></td>
+              <td><span class="pill blue">Scheduled</span></td>
+            </tr>
+            <tr>
+              <td><strong>Parnell Apt 3B</strong></td>
+              <td>Jun 19 3pm</td>
+              <td>Jun 22</td>
+              <td>3</td>
+              <td><span style="color:#ef4444;font-weight:600;">Jun 22 – unassigned</span></td>
+              <td><span class="pill red">Needs cleaner</span></td>
+            </tr>
+            <tr>
+              <td><strong>Palm Beach Villa</strong></td>
+              <td>Jun 21 2pm</td>
+              <td>Jun 25</td>
+              <td>4</td>
+              <td><span style="color:#6b7c93;">Jun 25 – 10am</span></td>
+              <td><span class="pill blue">Scheduled</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ponsonby Studio</strong></td>
+              <td>Jun 22 3pm</td>
+              <td>Jun 24</td>
+              <td>2</td>
+              <td><span style="color:#6b7c93;">Jun 24 – 11am</span></td>
+              <td><span class="pill blue">Scheduled</span></td>
+            </tr>
+            <tr>
+              <td><strong>Grey Lynn House</strong></td>
+              <td>Jun 23 1pm</td>
+              <td>Jun 27</td>
+              <td>4</td>
+              <td><span style="color:#6b7c93;">Jun 27 – 9am</span></td>
+              <td><span class="pill gray">Not scheduled</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:12px;padding:12px 16px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;font-size:13px;color:#92400e;">
+        <strong>⚠ Action needed:</strong> Parnell Apt 3B has a guest checking out Jun 22 with no cleaner assigned. <a href="schedules.html" style="color:#92400e;font-weight:700;text-decoration:underline;">Assign a cleaner →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('bookings', CB.getSimulatedUser());
+</script>
+</body>
+</html>

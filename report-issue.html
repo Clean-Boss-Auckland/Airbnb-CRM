@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Issue – Clean Boss</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Report an issue</div>
+        <div class="topbar-sub">Flag damage or problems at a property</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <a href="my-jobs.html" class="topbar-btn">← Back to jobs</a>
+    </div>
+    <div class="content">
+      <div style="max-width:600px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Issue details</div></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Property</label>
+              <select id="property-select">
+                <option>Grey Lynn House — Today 2pm</option>
+                <option>Ponsonby Studio — Today 5pm</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Issue type</label>
+              <select id="issue-type">
+                <option>Damage / breakage</option>
+                <option>Missing items</option>
+                <option>Maintenance required</option>
+                <option>Cleanliness concern</option>
+                <option>Access problem</option>
+                <option>Safety concern</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Severity</label>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;">
+                <label style="cursor:pointer;">
+                  <input type="radio" name="severity" value="low" style="display:none;" onchange="selectSeverity('low')"/>
+                  <div id="sev-low" style="border:1.5px solid #d1d5db;border-radius:8px;padding:10px;text-align:center;transition:all 0.15s;">
+                    <div style="font-size:18px;margin-bottom:4px;">🟡</div>
+                    <div style="font-size:12px;font-weight:600;">Low</div>
+                    <div style="font-size:11px;color:#6b7c93;">Minor, not urgent</div>
+                  </div>
+                </label>
+                <label style="cursor:pointer;">
+                  <input type="radio" name="severity" value="medium" style="display:none;" onchange="selectSeverity('medium')"/>
+                  <div id="sev-medium" style="border:1.5px solid #d1d5db;border-radius:8px;padding:10px;text-align:center;transition:all 0.15s;">
+                    <div style="font-size:18px;margin-bottom:4px;">🟠</div>
+                    <div style="font-size:12px;font-weight:600;">Medium</div>
+                    <div style="font-size:11px;color:#6b7c93;">Needs attention</div>
+                  </div>
+                </label>
+                <label style="cursor:pointer;">
+                  <input type="radio" name="severity" value="high" style="display:none;" onchange="selectSeverity('high')"/>
+                  <div id="sev-high" style="border:1.5px solid #d1d5db;border-radius:8px;padding:10px;text-align:center;transition:all 0.15s;">
+                    <div style="font-size:18px;margin-bottom:4px;">🔴</div>
+                    <div style="font-size:12px;font-weight:600;">High</div>
+                    <div style="font-size:11px;color:#6b7c93;">Urgent</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="description" rows="4" placeholder="Describe what you found — be as specific as possible..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Photo evidence (optional)</label>
+              <div class="upload-zone" onclick="document.getElementById('issue-photos').click()">
+                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <div style="font-size:13px;font-weight:600;color:#1a2535;margin-bottom:2px;">Add photos</div>
+                <div style="font-size:12px;color:#6b7c93;">Tap to take a photo or upload from gallery</div>
+              </div>
+              <input type="file" id="issue-photos" multiple accept="image/*" style="display:none;" onchange="previewPhotos(this.files)"/>
+              <div id="photo-previews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"></div>
+            </div>
+            <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px;font-size:12px;color:#92400e;">
+              This report will be sent immediately to the operations team and property manager. They will follow up directly.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
+          <a href="my-jobs.html" class="btn">Cancel</a>
+          <button class="btn primary" onclick="submitReport()">Submit report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script>
+  CB.init('report-issue', { name:'Marcus Lee', initials:'ML', role:'cleaner' });
+  function selectSeverity(s) {
+    ['low','medium','high'].forEach(v => {
+      const el = document.getElementById('sev-'+v);
+      el.style.border = v===s ? '2px solid #3b9de0' : '1.5px solid #d1d5db';
+      el.style.background = v===s ? '#e8f4fd' : '';
+    });
+  }
+  function previewPhotos(files) {
+    const container = document.getElementById('photo-previews');
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.cssText = 'width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;';
+        container.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  function submitReport() {
+    const desc = document.getElementById('description').value;
+    if(!desc) { alert('Please describe the issue before submitting.'); return; }
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ Issue reported — ops team notified';
+    document.body.appendChild(t);
+    setTimeout(() => { t.remove(); window.location.href='my-jobs.html'; }, 2000);
+  }
+</script>
+</body>
+</html>

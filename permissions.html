@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Permissions – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Permissions</div>
+        <div class="topbar-sub">Control what each role can access</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <button class="topbar-btn primary" onclick="saveAll()">Save changes</button>
+    </div>
+
+    <div class="content">
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#1e40af;">
+        <strong>How permissions work:</strong> These are the default page permissions for each role. You can also override permissions for individual users from the <a href="users.html" style="color:#1d4ed8;font-weight:600;">Users page</a>.
+      </div>
+
+      <div class="card">
+        <div style="overflow-x:auto;">
+          <table style="min-width:600px;">
+            <thead>
+              <tr>
+                <th style="width:220px;">Page / Feature</th>
+                <th style="text-align:center;"><div style="display:flex;align-items:center;justify-content:center;gap:6px;"><div class="avatar" style="width:24px;height:24px;font-size:9px;background:#0d1b2e;">A</div>Admin</div></th>
+                <th style="text-align:center;"><div style="display:flex;align-items:center;justify-content:center;gap:6px;"><div class="avatar" style="width:24px;height:24px;font-size:9px;background:#8b5cf6;">O</div>Operations</div></th>
+                <th style="text-align:center;"><div style="display:flex;align-items:center;justify-content:center;gap:6px;"><div class="avatar" style="width:24px;height:24px;font-size:9px;background:#3b9de0;">P</div>Prop. Mgr</div></th>
+                <th style="text-align:center;"><div style="display:flex;align-items:center;justify-content:center;gap:6px;"><div class="avatar" style="width:24px;height:24px;font-size:9px;background:#14b8a6;">C</div>Cleaner</div></th>
+              </tr>
+            </thead>
+            <tbody id="perm-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('permissions', CB.getSimulatedUser());
+
+  const pages = [
+    { section: 'Main', items: [
+      { id:'overview', label:'Overview dashboard', admin:true, ops:true, pm:true, cleaner:false },
+    ]},
+    { section: 'Admin only', items: [
+      { id:'access-requests', label:'Access requests', admin:true, ops:false, pm:false, cleaner:false },
+      { id:'users', label:'User management', admin:true, ops:false, pm:false, cleaner:false },
+      { id:'permissions', label:'Permissions settings', admin:true, ops:false, pm:false, cleaner:false },
+      { id:'settings', label:'System settings', admin:true, ops:false, pm:false, cleaner:false },
+    ]},
+    { section: 'Operations', items: [
+      { id:'jobs', label:'All jobs', admin:true, ops:true, pm:false, cleaner:false },
+      { id:'schedules', label:'Schedules', admin:true, ops:true, pm:false, cleaner:false },
+      { id:'cleaners', label:'Cleaners management', admin:true, ops:true, pm:false, cleaner:false },
+      { id:'properties', label:'Properties', admin:true, ops:true, pm:true, cleaner:false },
+    ]},
+    { section: 'Property manager', items: [
+      { id:'bookings', label:'Bookings', admin:true, ops:false, pm:true, cleaner:false },
+      { id:'cleaning-status', label:'Cleaning status', admin:true, ops:true, pm:true, cleaner:false },
+      { id:'reports', label:'Reports', admin:true, ops:true, pm:true, cleaner:false },
+      { id:'issues', label:'Issues', admin:true, ops:true, pm:true, cleaner:false },
+    ]},
+    { section: 'Cleaner', items: [
+      { id:'my-jobs', label:'My jobs (cleaner view)', admin:true, ops:false, pm:false, cleaner:true },
+      { id:'checklist', label:'Job checklists', admin:true, ops:false, pm:false, cleaner:true },
+      { id:'property-detail', label:'Property info', admin:true, ops:true, pm:true, cleaner:true },
+      { id:'upload-photos', label:'Upload photos', admin:true, ops:false, pm:false, cleaner:true },
+      { id:'report-issue', label:'Report an issue', admin:true, ops:false, pm:false, cleaner:true },
+    ]},
+  ];
+
+  const roles = ['admin','ops','pm','cleaner'];
+
+  document.getElementById('perm-table').innerHTML = pages.map(section => `
+    <tr><td colspan="5" style="padding:14px 16px 6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#6b7c93;background:#fafafa;border-bottom:1px solid #e5e7eb;">${section.section}</td></tr>
+    ${section.items.map(item => `
+      <tr>
+        <td style="font-size:13px;font-weight:500;">${item.label}</td>
+        ${['admin','ops','pm','cleaner'].map(role => `
+          <td style="text-align:center;">
+            <label class="toggle" style="margin:0 auto;">
+              <input type="checkbox" ${item[role] ? 'checked' : ''} ${role === 'admin' ? 'disabled' : ''} onchange="markChanged()"/>
+              <span class="toggle-slider"></span>
+            </label>
+          </td>
+        `).join('')}
+      </tr>
+    `).join('')}
+  `).join('');
+
+  let changed = false;
+
+  function markChanged() {
+    changed = true;
+    document.querySelector('.topbar-btn.primary').textContent = 'Save changes ●';
+  }
+
+  function saveAll() {
+    changed = false;
+    document.querySelector('.topbar-btn.primary').textContent = 'Save changes';
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ Permissions saved';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>

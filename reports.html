@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Reports</div>
+        <div class="topbar-sub">Performance and activity summaries</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <select style="width:160px;font-size:13px;padding:7px 12px;" onchange="setPeriod(this.value)">
+        <option value="week">This week</option>
+        <option value="month" selected>This month</option>
+        <option value="quarter">This quarter</option>
+      </select>
+      <button class="topbar-btn">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+
+    <div class="content">
+      <!-- KPI cards -->
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="stat-label">Jobs completed</div>
+          <div class="stat-value" id="kpi-jobs">284</div>
+          <div class="stat-delta">↑ 18% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <div class="stat-label">Properties serviced</div>
+          <div class="stat-value" id="kpi-props">47</div>
+          <div class="stat-delta">All active properties</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
+          <div class="stat-label">Issues reported</div>
+          <div class="stat-value" id="kpi-issues">12</div>
+          <div class="stat-delta neg">↑ 3 vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon teal"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="stat-label">Avg guest rating</div>
+          <div class="stat-value" id="kpi-rating">4.8★</div>
+          <div class="stat-delta">↑ 0.2 vs last month</div>
+        </div>
+      </div>
+
+      <div class="two-col-grid">
+        <!-- Jobs by day chart -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Jobs completed per day</div><div class="card-sub" id="chart-sub">June 2026</div></div>
+          </div>
+          <div class="card-body">
+            <div id="bar-chart" style="height:180px;display:flex;align-items:flex-end;gap:4px;padding-top:8px;"></div>
+          </div>
+        </div>
+
+        <!-- Jobs by cleaner -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Jobs by cleaner</div><div class="card-sub">This month</div></div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Cleaner</th><th>Jobs</th><th>Issues</th><th>Rating</th></tr></thead>
+              <tbody>
+                <tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" style="width:26px;height:26px;font-size:10px;background:#14b8a6;">ML</div>Marcus Lee</div></td><td><strong>64</strong></td><td><span class="pill gray">2</span></td><td>4.9★</td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" style="width:26px;height:26px;font-size:10px;background:#3b9de0;">SK</div>Sara Kim</div></td><td><strong>58</strong></td><td><span class="pill amber">3</span></td><td>4.8★</td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" style="width:26px;height:26px;font-size:10px;background:#8b5cf6;">TW</div>Tom Walsh</div></td><td><strong>49</strong></td><td><span class="pill gray">2</span></td><td>4.7★</td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" style="width:26px;height:26px;font-size:10px;background:#f59e0b;">JK</div>Jake Kim</div></td><td><strong>43</strong></td><td><span class="pill gray">1</span></td><td>4.9★</td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" style="width:26px;height:26px;font-size:10px;background:#10b981;">AT</div>Aroha Tane</div></td><td><strong>70</strong></td><td><span class="pill gray">4</span></td><td>5.0★</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issue breakdown -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-header">
+          <div><div class="card-title">Issues breakdown</div><div class="card-sub">By type · this month</div></div>
+          <a href="issues.html" class="btn sm">View all issues</a>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+            <div style="text-align:center;padding:16px;background:#fef3c7;border-radius:10px;">
+              <div style="font-size:28px;font-weight:800;color:#92400e;">5</div>
+              <div style="font-size:12px;color:#92400e;font-weight:600;margin-top:4px;">Damage</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:#fee2e2;border-radius:10px;">
+              <div style="font-size:28px;font-weight:800;color:#991b1b;">3</div>
+              <div style="font-size:12px;color:#991b1b;font-weight:600;margin-top:4px;">Maintenance</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:#ede9fe;border-radius:10px;">
+              <div style="font-size:28px;font-weight:800;color:#5b21b6;">2</div>
+              <div style="font-size:12px;color:#5b21b6;font-weight:600;margin-top:4px;">Missing items</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:#dcfce7;border-radius:10px;">
+              <div style="font-size:28px;font-weight:800;color:#166534;">2</div>
+              <div style="font-size:12px;color:#166534;font-weight:600;margin-top:4px;">Access issues</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('reports', CB.getSimulatedUser());
+
+  const data = {
+    week:  { jobs:71, props:47, issues:3, rating:'4.9★', bars:[8,10,12,14,9,11,7] },
+    month: { jobs:284, props:47, issues:12, rating:'4.8★', bars:[7,9,11,8,10,12,9,8,11,13,10,9,12,11,8,10,9,11,10,12,13,9,10,11,12,8,10,9,11,10] },
+    quarter:{ jobs:812, props:47, issues:34, rating:'4.7★', bars:[9,10,11,9,12,11,10,9,10,11,12,10,9,11,10,12,11,10,9,11,12,10,11,9,10,12,11,10,9,11,10,12,11,9,10,11,12,10,11,9,10,11,10,12,11,10,9,11,10,12,11,10,9,11,10,12,11,10,9,11,10,12,11,9,10,11,12,10,11,9,10,11,10,12,11,10,9,11,10,12,11,10,9,11,10,12,11,10,9,11] },
+  };
+
+  let current = 'month';
+
+  function setPeriod(v) {
+    current = v;
+    const d = data[v];
+    document.getElementById('kpi-jobs').textContent = d.jobs;
+    document.getElementById('kpi-props').textContent = d.props;
+    document.getElementById('kpi-issues').textContent = d.issues;
+    document.getElementById('kpi-rating').textContent = d.rating;
+    renderChart(d.bars);
+  }
+
+  function renderChart(bars) {
+    const max = Math.max(...bars);
+    const chart = document.getElementById('bar-chart');
+    chart.innerHTML = bars.map((v,i) => {
+      const h = Math.round((v/max)*160);
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;">
+        <div style="width:100%;background:#3b9de0;border-radius:3px 3px 0 0;height:${h}px;opacity:${0.5+0.5*(v/max)};"></div>
+        ${bars.length <= 31 ? `<div style="font-size:9px;color:#6b7c93;">${i+1}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  renderChart(data.month.bars);
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checklist – Clean Boss</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Checklist</div>
+        <div class="topbar-sub">Grey Lynn House · Today 2:00pm</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <span id="progress-pill" class="pill blue">0 / 8 done</span>
+    </div>
+    <div class="content">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Cleaning checklist</div>
+            <div class="card-sub">Tick each item as you complete it</div>
+          </div>
+          <button class="btn primary" onclick="markAll()">Mark all done</button>
+        </div>
+        <div style="padding:8px 20px;" id="checklist-container"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Notes for this property</div></div>
+        <div class="card-body" style="font-size:13px;color:#6b7c93;line-height:1.8;">
+          <p>• Key in lockbox: <strong style="color:#1a2535;">4821</strong> — return after use</p>
+          <p>• Fresh linen in the hall cupboard, top shelf</p>
+          <p>• Bin day is Thursday — take bins out if full</p>
+          <p>• Do not use the back bedroom — owner storage only</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <a href="upload-photos.html" class="btn" style="flex:1;justify-content:center;">Upload completion photos</a>
+        <a href="report-issue.html" class="btn danger" style="flex:1;justify-content:center;">Report an issue</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script>
+  CB.init('checklist', { name: 'Marcus Lee', initials: 'ML', role: 'cleaner' });
+
+  const items = [
+    { id:1, label:'Vacuum all rooms', done:false },
+    { id:2, label:'Mop hard floors', done:false },
+    { id:3, label:'Clean and sanitise bathrooms', done:false },
+    { id:4, label:'Change all bed linen', done:false },
+    { id:5, label:'Wipe down kitchen surfaces', done:false },
+    { id:6, label:'Restock toiletries', done:false },
+    { id:7, label:'Empty all bins', done:false },
+    { id:8, label:'Take completion photos', done:false },
+  ];
+
+  function render() {
+    const done = items.filter(i => i.done).length;
+    document.getElementById('progress-pill').textContent = done + ' / ' + items.length + ' done';
+    document.getElementById('progress-pill').className = 'pill ' + (done === items.length ? 'green' : 'blue');
+    document.getElementById('checklist-container').innerHTML = items.map(item => `
+      <div class="checklist-item" onclick="toggle(${item.id})" style="cursor:pointer;">
+        <div class="check-box ${item.done ? 'checked' : ''}"></div>
+        <span style="font-size:14px;${item.done ? 'text-decoration:line-through;color:#6b7c93;' : ''}">${item.label}</span>
+      </div>
+    `).join('');
+  }
+
+  function toggle(id) {
+    const item = items.find(i => i.id === id);
+    item.done = !item.done;
+    render();
+  }
+
+  function markAll() {
+    items.forEach(i => i.done = true);
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>

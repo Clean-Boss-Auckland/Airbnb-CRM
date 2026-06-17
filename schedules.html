@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Schedules – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Schedules</div>
+        <div class="topbar-sub">Week of 16–22 June 2026</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="topbar-btn" onclick="prevWeek()">← Prev</button>
+        <button class="topbar-btn" onclick="nextWeek()">Next →</button>
+        <button class="topbar-btn primary" onclick="document.getElementById('new-schedule-modal').classList.add('open')">+ Add job</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Week grid -->
+      <div class="card" style="margin-bottom:16px;overflow-x:auto;">
+        <div style="min-width:700px;">
+          <!-- Day headers -->
+          <div style="display:grid;grid-template-columns:140px repeat(7,1fr);border-bottom:1px solid #e5e7eb;">
+            <div style="padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6b7c93;">Cleaner</div>
+            <div id="day-mon" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;background:#fffbeb;">Mon 16</div>
+            <div id="day-tue" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;background:#eff6ff;">Tue 17 <span style="background:#3b9de0;color:white;font-size:10px;padding:1px 5px;border-radius:10px;margin-left:3px;">Today</span></div>
+            <div id="day-wed" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;">Wed 18</div>
+            <div id="day-thu" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;">Thu 19</div>
+            <div id="day-fri" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;">Fri 20</div>
+            <div id="day-sat" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;color:#6b7c93;">Sat 21</div>
+            <div id="day-sun" style="padding:12px 8px;text-align:center;font-size:12px;font-weight:700;border-left:1px solid #e5e7eb;color:#6b7c93;">Sun 22</div>
+          </div>
+
+          <!-- Cleaner rows -->
+          <div id="schedule-grid"></div>
+        </div>
+      </div>
+
+      <!-- Unassigned jobs -->
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Unassigned jobs</div><div class="card-sub">These jobs need a cleaner assigned</div></div>
+          <span class="pill red">2 unassigned</span>
+        </div>
+        <table>
+          <thead><tr><th>Property</th><th>Date</th><th>Time</th><th>Assign to</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Parnell Apt 3B</strong></td>
+              <td>Today</td>
+              <td>4:00pm</td>
+              <td>
+                <select style="width:160px;font-size:12px;padding:4px 8px;">
+                  <option>Select cleaner...</option>
+                  <option>Marcus Lee</option>
+                  <option>Sara Kim</option>
+                  <option>Tom Walsh</option>
+                  <option>Jake Kim</option>
+                </select>
+              </td>
+              <td><button class="btn sm primary" onclick="assign(this)">Assign</button></td>
+            </tr>
+            <tr>
+              <td><strong>Remuera House</strong></td>
+              <td>Thu 19</td>
+              <td>10:00am</td>
+              <td>
+                <select style="width:160px;font-size:12px;padding:4px 8px;">
+                  <option>Select cleaner...</option>
+                  <option>Marcus Lee</option>
+                  <option>Sara Kim</option>
+                  <option>Tom Walsh</option>
+                  <option>Jake Kim</option>
+                </select>
+              </td>
+              <td><button class="btn sm primary" onclick="assign(this)">Assign</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New job modal -->
+<div class="modal-overlay" id="new-schedule-modal">
+  <div class="modal">
+    <div class="modal-title">Schedule a job</div>
+    <div class="modal-sub">Assign a cleaning job to a specific cleaner</div>
+    <div class="form-group"><label class="form-label">Property</label>
+      <select><option>Palm Beach Villa</option><option>Takapuna Studio</option><option>Grey Lynn House</option><option>Parnell Apt 3B</option><option>Ponsonby Studio</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Cleaner</label>
+      <select><option>Marcus Lee</option><option>Sara Kim</option><option>Tom Walsh</option><option>Jake Kim</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group"><label class="form-label">Date</label><input type="date" value="2026-06-17"/></div>
+      <div class="form-group"><label class="form-label">Start time</label><input type="time" value="09:00"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea rows="2" placeholder="Access code, special instructions..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="document.getElementById('new-schedule-modal').classList.remove('open')">Cancel</button>
+      <button class="btn primary" onclick="saveSchedule()">Schedule job</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('schedules', CB.getSimulatedUser());
+
+  const cleaners = [
+    { name: 'Marcus Lee', initials: 'ML', color: '#14b8a6',
+      jobs: { mon:['Palm Beach 9am'], tue:['Grey Lynn 2pm','Ponsonby 5pm'], wed:['Takapuna 9am'], thu:[], fri:['Newmarket 10am'], sat:[], sun:[] }},
+    { name: 'Sara Kim', initials: 'SK', color: '#3b9de0',
+      jobs: { mon:['Takapuna 10am'], tue:['Takapuna 11:30am'], wed:[], thu:['Mt Eden 1pm'], fri:['Parnell 3pm'], sat:[], sun:[] }},
+    { name: 'Tom Walsh', initials: 'TW', color: '#8b5cf6',
+      jobs: { mon:['Grey Lynn 2pm'], tue:['Grey Lynn 2pm'], wed:['Remuera 10am'], thu:[], fri:[], sat:[], sun:[] }},
+    { name: 'Jake Kim', initials: 'JK', color: '#f59e0b',
+      jobs: { mon:[], tue:['Newmarket 10am'], wed:['Palm Beach 9am'], thu:['Takapuna 2pm'], fri:['Grey Lynn 9am'], sat:[], sun:[] }},
+  ];
+
+  const days = ['mon','tue','wed','thu','fri','sat','sun'];
+  const pillColors = ['#dcfce7','#dbeafe','#ede9fe','#fef3c7','#fee2e2','#ccfbf1'];
+  const textColors = ['#166534','#1e40af','#5b21b6','#92400e','#991b1b','#134e4a'];
+
+  document.getElementById('schedule-grid').innerHTML = cleaners.map((c,ci) => `
+    <div style="display:grid;grid-template-columns:140px repeat(7,1fr);border-bottom:1px solid #f3f4f6;">
+      <div style="padding:12px 16px;display:flex;align-items:center;gap:8px;">
+        <div class="avatar" style="width:28px;height:28px;font-size:10px;background:${c.color};">${c.initials}</div>
+        <span style="font-size:12px;font-weight:600;">${c.name.split(' ')[0]}</span>
+      </div>
+      ${days.map((d,di) => `
+        <div style="padding:6px;border-left:1px solid #f3f4f6;min-height:56px;${d==='sun'||d==='sat'?'background:#fafafa;':''}">
+          ${(c.jobs[d]||[]).map((j,ji) => `
+            <div style="background:${pillColors[ci%pillColors.length]};color:${textColors[ci%textColors.length]};padding:3px 6px;border-radius:4px;font-size:10px;font-weight:600;margin-bottom:3px;cursor:pointer;">${j}</div>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  function assign(btn) {
+    const row = btn.closest('tr');
+    const sel = row.querySelector('select');
+    if (sel.value === 'Select cleaner...') { alert('Please select a cleaner first.'); return; }
+    row.style.opacity = '0.4';
+    setTimeout(() => row.remove(), 400);
+    toast('Assigned to ' + sel.value);
+  }
+
+  function saveSchedule() {
+    document.getElementById('new-schedule-modal').classList.remove('open');
+    toast('Job scheduled successfully');
+  }
+
+  function prevWeek() { toast('Previous week — connect to Supabase for live data'); }
+  function nextWeek() { toast('Next week — connect to Supabase for live data'); }
+
+  function toast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;';
+    t.textContent = '✓ ' + msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cleaners – Clean Boss Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Cleaners</div>
+        <div class="topbar-sub">Active field staff</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#6b7c93;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search cleaners..." oninput="filter(this.value)"/>
+      </div>
+    </div>
+
+    <div class="content">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">Total cleaners</div><div class="stat-value">8</div><div class="stat-delta">2 added this month</div></div>
+        <div class="stat-card"><div class="stat-label">On duty today</div><div class="stat-value">5</div><div class="stat-delta neu">3 days off</div></div>
+        <div class="stat-card"><div class="stat-label">Jobs completed</div><div class="stat-value">127</div><div class="stat-delta">↑ 14% this week</div></div>
+        <div class="stat-card"><div class="stat-label">Avg rating</div><div class="stat-value">4.8★</div><div class="stat-delta">Based on 43 reviews</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;" id="cleaners-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Cleaner detail modal -->
+<div class="modal-overlay" id="cleaner-modal">
+  <div class="modal" style="width:520px;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <div id="modal-avatar" class="avatar" style="width:56px;height:56px;font-size:18px;"></div>
+      <div>
+        <div class="modal-title" id="modal-name" style="margin-bottom:2px;"></div>
+        <div id="modal-status"></div>
+      </div>
+      <button class="btn sm" style="margin-left:auto;" onclick="document.getElementById('cleaner-modal').classList.remove('open')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;" id="modal-stats"></div>
+    <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:#1a2535;">Recent jobs</div>
+    <div id="modal-jobs"></div>
+    <div class="modal-actions">
+      <button class="btn danger" onclick="document.getElementById('cleaner-modal').classList.remove('open')">Suspend</button>
+      <a href="schedules.html" class="btn primary">View schedule</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  CB.init('cleaners', CB.getSimulatedUser());
+
+  const cleaners = [
+    { id:1, name:'Marcus Lee', initials:'ML', color:'#14b8a6', phone:'+64 21 555 0001', email:'marcus@email.com', status:'on-duty', jobsToday:3, jobsWeek:14, completed:127, rating:4.9, areas:['Beachlands','Howick','Pakuranga'], recentJobs:['Palm Beach Villa – 9am','Grey Lynn House – 2pm','Ponsonby Studio – 5pm'] },
+    { id:2, name:'Sara Kim', initials:'SK', color:'#3b9de0', phone:'+64 21 555 0002', email:'sara.k@email.com', status:'on-duty', jobsToday:2, jobsWeek:11, completed:98, rating:4.8, areas:['Takapuna','Devonport','Milford'], recentJobs:['Takapuna Studio – 11:30am','Mt Eden Home – 1pm'] },
+    { id:3, name:'Tom Walsh', initials:'TW', color:'#8b5cf6', phone:'+64 21 555 0003', email:'tom.w@email.com', status:'on-duty', jobsToday:1, jobsWeek:9, completed:84, rating:4.7, areas:['Grey Lynn','Ponsonby','Herne Bay'], recentJobs:['Grey Lynn House – 2pm'] },
+    { id:4, name:'Jake Kim', initials:'JK', color:'#f59e0b', phone:'+64 21 555 0004', email:'jake.k@email.com', status:'on-duty', jobsToday:2, jobsWeek:12, completed:61, rating:4.9, areas:['Newmarket','Parnell','Remuera'], recentJobs:['Newmarket Apt – 10am','Parnell Apt 3B – 3pm'] },
+    { id:5, name:'Nina Patel', initials:'NP', color:'#f43f5e', phone:'+64 21 555 0005', email:'nina.p@email.com', status:'day-off', jobsToday:0, jobsWeek:8, completed:45, rating:4.6, areas:['Mt Eden','Epsom','Onehunga'], recentJobs:[] },
+    { id:6, name:'Ben Clark', initials:'BC', color:'#0d1b2e', phone:'+64 21 555 0006', email:'ben.c@email.com', status:'day-off', jobsToday:0, jobsWeek:6, completed:32, rating:4.8, areas:['CBD','Wynyard','Viaduct'], recentJobs:[] },
+    { id:7, name:'Aroha Tane', initials:'AT', color:'#10b981', phone:'+64 21 555 0007', email:'aroha.t@email.com', status:'on-duty', jobsToday:2, jobsWeek:10, completed:77, rating:5.0, areas:['West Auckland','Henderson','Glen Eden'], recentJobs:['Henderson Home – 9am','Glen Eden Apt – 1pm'] },
+    { id:8, name:'Sam Peters', initials:'SP', color:'#6366f1', phone:'+64 21 555 0008', email:'sam.p@email.com', status:'on-duty', jobsToday:1, jobsWeek:7, completed:23, rating:4.5, areas:['South Auckland','Manukau','Papatoetoe'], recentJobs:['Manukau House – 10am'] },
+  ];
+
+  function renderCleaners(list) {
+    document.getElementById('cleaners-grid').innerHTML = list.map(c => `
+      <div class="card" style="cursor:pointer;" onclick="openCleaner(${c.id})">
+        <div style="padding:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <div class="avatar" style="width:44px;height:44px;font-size:15px;background:${c.color};">${c.initials}</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:14px;">${c.name}</div>
+              <div style="font-size:12px;color:#6b7c93;">${c.phone}</div>
+            </div>
+            <span class="pill ${c.status==='on-duty'?'green':'gray'}">
+              <span class="dot ${c.status==='on-duty'?'green':'gray'}"></span>
+              ${c.status==='on-duty'?'On duty':'Day off'}
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+            <div style="background:#f9fafb;border-radius:6px;padding:8px;text-align:center;">
+              <div style="font-size:10px;color:#6b7c93;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Today</div>
+              <div style="font-weight:800;font-size:18px;color:#1a2535;">${c.jobsToday}</div>
+            </div>
+            <div style="background:#f9fafb;border-radius:6px;padding:8px;text-align:center;">
+              <div style="font-size:10px;color:#6b7c93;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">This week</div>
+              <div style="font-weight:800;font-size:18px;color:#1a2535;">${c.jobsWeek}</div>
+            </div>
+            <div style="background:#f9fafb;border-radius:6px;padding:8px;text-align:center;">
+              <div style="font-size:10px;color:#6b7c93;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Rating</div>
+              <div style="font-weight:800;font-size:18px;color:#1a2535;">${c.rating}★</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#6b7c93;">Areas: ${c.areas.join(', ')}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderCleaners(cleaners);
+
+  function filter(q) {
+    renderCleaners(cleaners.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || c.areas.join(' ').toLowerCase().includes(q.toLowerCase())));
+  }
+
+  function openCleaner(id) {
+    const c = cleaners.find(x => x.id === id);
+    document.getElementById('modal-avatar').textContent = c.initials;
+    document.getElementById('modal-avatar').style.background = c.color;
+    document.getElementById('modal-name').textContent = c.name;
+    document.getElementById('modal-status').innerHTML = `<span class="pill ${c.status==='on-duty'?'green':'gray'}"><span class="dot ${c.status==='on-duty'?'green':'gray'}"></span>${c.status==='on-duty'?'On duty':'Day off'}</span>`;
+    document.getElementById('modal-stats').innerHTML = `
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Email</div><div style="font-size:13px;font-weight:600;margin-top:2px;">${c.email}</div></div>
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Phone</div><div style="font-size:13px;font-weight:600;margin-top:2px;">${c.phone}</div></div>
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Total completed</div><div class="stat-value" style="font-size:22px;">${c.completed}</div></div>
+      <div class="stat-card" style="padding:12px;"><div class="stat-label">Avg rating</div><div class="stat-value" style="font-size:22px;">${c.rating}★</div></div>
+    `;
+    document.getElementById('modal-jobs').innerHTML = c.recentJobs.length
+      ? c.recentJobs.map(j => `<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:13px;display:flex;align-items:center;gap:8px;"><span class="pill green">✓</span>${j}</div>`).join('')
+      : '<div style="color:#6b7c93;font-size:13px;padding:12px 0;">No jobs scheduled today.</div>';
+    document.getElementById('cleaner-modal').classList.add('open');
+  }
+</script>
+</body>
+</html>
