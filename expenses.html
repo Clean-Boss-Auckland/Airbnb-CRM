@@ -178,16 +178,28 @@
         </div>
       </div>
 
-      <!-- Filter tabs -->
-      <div class="filter-tabs">
-        <button class="filter-tab active" onclick="filterExpenses('all', this)">All</button>
-        <button class="filter-tab" onclick="filterExpenses('incoming', this)">Incoming</button>
-        <button class="filter-tab" onclick="filterExpenses('processing', this)">Processing</button>
-        <button class="filter-tab" onclick="filterExpenses('paid', this)">Paid</button>
+      <!-- View toggle + Filter tabs -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div class="filter-tabs" id="status-filter-tabs">
+          <button class="filter-tab active" onclick="filterExpenses('all', this)">All</button>
+          <button class="filter-tab" onclick="filterExpenses('incoming', this)">Incoming</button>
+          <button class="filter-tab" onclick="filterExpenses('processing', this)">Processing</button>
+          <button class="filter-tab" onclick="filterExpenses('paid', this)">Paid</button>
+        </div>
+        <div class="filter-tabs" id="view-toggle-tabs">
+          <button class="filter-tab active" onclick="setView('list', this)">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-right:4px;"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            List view
+          </button>
+          <button class="filter-tab" onclick="setView('grouped', this)">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Group by user
+          </button>
+        </div>
       </div>
 
-      <!-- Expenses table -->
-      <div class="card" style="margin-bottom:20px;">
+      <!-- LIST VIEW -->
+      <div class="card" style="margin-bottom:20px;" id="list-view-card">
         <div class="card-header">
           <div>
             <div class="card-title">Expense claims</div>
@@ -212,7 +224,6 @@
               <th>Receipt</th>
               <th>Name</th>
               <th>Category</th>
-              <th>Description</th>
               <th>Property / Job</th>
               <th>Date</th>
               <th>Amount</th>
@@ -222,6 +233,11 @@
           </thead>
           <tbody id="expenses-tbody"></tbody>
         </table>
+      </div>
+
+      <!-- GROUPED VIEW (by user) -->
+      <div id="grouped-view-card" style="display:none;margin-bottom:20px;">
+        <div id="grouped-cards"></div>
       </div>
 
       <!-- Payment history -->
@@ -327,53 +343,163 @@ const history = [
 let activeFilter = 'all';
 let activeExpenseId = null;
 
+let activeView = 'list';
+
 function filterExpenses(f, el) {
   activeFilter = f;
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#status-filter-tabs .filter-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   renderExpenses();
 }
 
-function renderExpenses() {
+function setView(view, el) {
+  activeView = view;
+  document.querySelectorAll('#view-toggle-tabs .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('list-view-card').style.display = view === 'list' ? 'block' : 'none';
+  document.getElementById('grouped-view-card').style.display = view === 'grouped' ? 'block' : 'none';
+  renderExpenses();
+}
+
+function getFilteredExpenses() {
   const month = document.getElementById('month-filter').value;
-  let list = expenses.filter(e => {
+  return expenses.filter(e => {
     const matchFilter = activeFilter === 'all' || e.status === activeFilter;
     const matchMonth = !month || (month === 'Jun 2026' && e.date.startsWith('2026-06')) ||
       (month === 'May 2026' && e.date.startsWith('2026-05')) ||
       (month === 'Apr 2026' && e.date.startsWith('2026-04'));
     return matchFilter && matchMonth;
   });
+}
 
-  const pillMap = {incoming:'blue',processing:'amber',paid:'green'};
-  const labelMap = {incoming:'Incoming',processing:'Processing',paid:'Paid'};
+function renderExpenses() {
+  const list = getFilteredExpenses();
 
-  document.getElementById('expenses-tbody').innerHTML = list.map(e => `
-    <tr style="cursor:pointer;" onclick="openDetail(${e.id})">
-      <td>
-        <div class="receipt-thumb ${e.receipt ? 'has-file' : ''}">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-      </td>
-      <td><strong>${e.name}</strong></td>
-      <td><span class="pill gray">${e.category}</span></td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.description}</td>
-      <td style="color:var(--text-muted);">${e.property}</td>
-      <td style="color:var(--text-muted);">${formatDate(e.date)}</td>
-      <td class="amount-cell">$${e.amount.toFixed(2)}</td>
-      <td onclick="event.stopPropagation()">
-        <select class="status-select ${e.status}" onchange="quickStatus(${e.id}, this.value, this)">
-          <option value="incoming" ${e.status==='incoming'?'selected':''}>Incoming</option>
-          <option value="processing" ${e.status==='processing'?'selected':''}>Processing</option>
-          <option value="paid" ${e.status==='paid'?'selected':''}>Paid</option>
-        </select>
-      </td>
-      <td onclick="event.stopPropagation()">
-        <button class="btn sm" onclick="openDetail(${e.id})">Review</button>
-      </td>
-    </tr>
-  `).join('') || `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">No expenses found</td></tr>`;
+  if (activeView === 'list') {
+    document.getElementById('expenses-tbody').innerHTML = list.map(e => `
+      <tr style="cursor:pointer;" onclick="openDetail(${e.id})">
+        <td>
+          <div class="receipt-thumb ${e.receipt ? 'has-file' : ''}">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+        </td>
+        <td><strong>${e.name}</strong></td>
+        <td><span class="pill gray">${e.category}</span></td>
+        <td style="color:var(--text-muted);">${e.property}</td>
+        <td style="color:var(--text-muted);">${formatDate(e.date)}</td>
+        <td class="amount-cell">$${e.amount.toFixed(2)}</td>
+        <td onclick="event.stopPropagation()">
+          <select class="status-select ${e.status}" onchange="quickStatus(${e.id}, this.value, this)">
+            <option value="incoming" ${e.status==='incoming'?'selected':''}>Incoming</option>
+            <option value="processing" ${e.status==='processing'?'selected':''}>Processing</option>
+            <option value="paid" ${e.status==='paid'?'selected':''}>Paid</option>
+          </select>
+        </td>
+        <td onclick="event.stopPropagation()">
+          <button class="btn sm" onclick="openDetail(${e.id})">Review</button>
+        </td>
+      </tr>
+    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No expenses found</td></tr>`;
+  } else {
+    renderGrouped(list);
+  }
 
   updateStats();
+}
+
+function renderGrouped(list) {
+  const groups = {};
+  list.forEach(e => {
+    if (!groups[e.name]) groups[e.name] = [];
+    groups[e.name].push(e);
+  });
+
+  const names = Object.keys(groups).sort();
+  const container = document.getElementById('grouped-cards');
+
+  if (names.length === 0) {
+    container.innerHTML = `<div class="card"><div style="text-align:center;padding:40px;color:var(--text-muted);">No expenses found</div></div>`;
+    return;
+  }
+
+  container.innerHTML = names.map(name => {
+    const items = groups[name];
+    const total = items.reduce((s, e) => s + e.amount, 0);
+    const outstanding = items.filter(e => e.status !== 'paid').reduce((s, e) => s + e.amount, 0);
+    const paidTotal = items.filter(e => e.status === 'paid').reduce((s, e) => s + e.amount, 0);
+    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+
+    return `
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-header" style="cursor:pointer;" onclick="toggleGroup(this)">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar" style="background:var(--blue);">${initials}</div>
+            <div>
+              <div class="card-title">${name}</div>
+              <div class="card-sub">${items.length} expense${items.length === 1 ? '' : 's'}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:24px;">
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Outstanding</div>
+              <div style="font-size:16px;font-weight:800;color:${outstanding > 0 ? 'var(--red)' : 'var(--text-muted)'};">$${outstanding.toFixed(2)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Total claimed</div>
+              <div style="font-size:16px;font-weight:800;">$${total.toFixed(2)}</div>
+            </div>
+            <svg class="group-chevron" viewBox="0 0 24 24" style="width:18px;height:18px;stroke:var(--text-muted);fill:none;stroke-width:2;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="group-body" style="display:none;">
+          <table>
+            <thead>
+              <tr><th>Receipt</th><th>Category</th><th>Property / Job</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              ${items.map(e => `
+                <tr style="cursor:pointer;" onclick="openDetail(${e.id})">
+                  <td>
+                    <div class="receipt-thumb ${e.receipt ? 'has-file' : ''}">
+                      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                  </td>
+                  <td><span class="pill gray">${e.category}</span></td>
+                  <td style="color:var(--text-muted);">${e.property}</td>
+                  <td style="color:var(--text-muted);">${formatDate(e.date)}</td>
+                  <td class="amount-cell">$${e.amount.toFixed(2)}</td>
+                  <td onclick="event.stopPropagation()">
+                    <select class="status-select ${e.status}" onchange="quickStatus(${e.id}, this.value, this)">
+                      <option value="incoming" ${e.status==='incoming'?'selected':''}>Incoming</option>
+                      <option value="processing" ${e.status==='processing'?'selected':''}>Processing</option>
+                      <option value="paid" ${e.status==='paid'?'selected':''}>Paid</option>
+                    </select>
+                  </td>
+                  <td onclick="event.stopPropagation()"><button class="btn sm" onclick="openDetail(${e.id})">Review</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="4">Subtotal · ${name}</td>
+                <td>$${total.toFixed(2)}</td>
+                <td colspan="2" style="color:var(--text-muted);font-weight:400;font-size:12px;">Paid: $${paidTotal.toFixed(2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleGroup(headerEl) {
+  const card = headerEl.closest('.card');
+  const body = card.querySelector('.group-body');
+  const chevron = card.querySelector('.group-chevron');
+  const isOpen = body.style.display === 'block';
+  body.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
 }
 
 function quickStatus(id, val, el) {
