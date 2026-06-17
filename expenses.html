@@ -470,7 +470,8 @@ function formatDate(d) {
 }
 
 function copyFormLink() {
-  const url = window.location.origin + '/expense-form.html';
+  const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+  const url = base + 'expense-form.html';
   navigator.clipboard.writeText(url).catch(() => {});
   showToast('Form link copied to clipboard', 'blue');
 }
